@@ -1,0 +1,6 @@
+name = NNELS Content Cafe
+description = Book content from Baker and Taylor via their content cafe API.
+core = 7.x
+version = 7.x-1.0
+package = NNELS
+configure = admin/configure/nnels/content_cafe

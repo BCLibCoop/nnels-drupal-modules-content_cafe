@@ -1,0 +1,515 @@
+<?php
+
+/**
+ * Implements hook_schema().
+ */
+function nnels_content_cafe_schema() {
+  $schema = array();
+
+  $schema['content_cafe_isbn'] = array(
+    'description'  => 'The content_cafe main table.',
+    'fields'       => array(
+      'isbn_id'       => array(
+        'description' => 'The primary key of the table.',
+        'type'        => 'serial',
+        'unsigned'    => TRUE,
+        'not null'    => TRUE,
+      ),
+      'isbn'          => array(
+        'description' => 'The ISBN of the book.',
+        'type'        => 'varchar',
+        'length'      => 13,
+        'not null'    => TRUE,
+      ),
+    ),
+    'primary key'  => array('isbn_id'),
+    'unique keys'  => array(
+      'isbn' => array('isbn'),
+    ),
+  );
+
+  $schema['content_cafe_supplier'] = array(
+    'description'  => 'The content_cafe supplier table.',
+    'fields'       => array(
+      'supplier_id'   => array(
+        'description' => 'The primary key of the table.',
+        'type'        => 'serial',
+        'unsigned'    => TRUE,
+        'not null'    => TRUE,
+      ),
+      'supplier_code' => array(
+        'description' => 'The code of the supplier.',
+        'type'        => 'varchar',
+        'length'      => 255,
+        'not null'    => TRUE,
+      ),
+      'supplier_name' => array(
+        'description' => 'The name of the supplier.',
+        'type'        => 'varchar',
+        'length'      => 255,
+        'not null'    => TRUE,
+      ),
+    ),
+    'primary key'  => array('supplier_id'),
+    'indexes'      => array(
+      'supplier_code' => array('supplier_code'),
+    ),
+  );
+
+  $schema['content_cafe_annotation'] = array(
+    'description'  => 'The content_cafe annotation table.',
+    'fields'       => array(
+      'annotation_id' => array(
+        'description' => 'The primary key of the table.',
+        'type'        => 'serial',
+        'unsigned'    => TRUE,
+        'not null'    => TRUE,
+      ),
+      'supplier_id'   => array(
+        'description' => 'The unique id from the content_cafe_supplier table.',
+        'type'        => 'int',
+        'unsigned'    => TRUE,
+        'not null'    => TRUE,
+      ),
+      'external_id'   => array(
+        'description' => 'The id returned from the API.',
+        'type'        => 'int',
+        'size'        => 'big',
+        'unsigned'    => TRUE,
+        'not null'    => TRUE,
+      ),
+      'annotation'    => array(
+        'description' => 'The annotation.',
+        'type'        => 'text',
+        'size'        => 'big',
+        'not null'    => TRUE,
+      ),
+    ),
+    'primary key'  => array('annotation_id'),
+    'unique keys'  => array(
+      'external_id' => array('external_id'),
+    ),
+    'foreign keys' => array(
+      'supplier_id' => array(
+        'table'   => 'content_cafe_supplier',
+        'columns' => array(
+          'supplier_id' => 'supplier_id',
+        ),
+      ),
+    ),
+  );
+
+  $schema['content_cafe_isbn_annotation'] = array(
+    'description'  => 'The content_cafe ISBN annotation bridge table.',
+    'fields'       => array(
+      'isbn_id'       => array(
+        'description' => 'The primary key of the content_cafe_isbn table.',
+        'type'        => 'int',
+        'unsigned'    => TRUE,
+        'not null'    => TRUE,
+      ),
+      'annotation_id' => array(
+        'description' => 'The primary key of the content_cafe_annotation table.',
+        'type'        => 'int',
+        'unsigned'    => TRUE,
+        'not null'    => TRUE,
+      ),
+    ),
+    'primary key'  => array('isbn_id', 'annotation_id'),
+    'foreign keys' => array(
+      'isbn_id' => array(
+        'table'   => 'content_cafe_isbn',
+        'columns' => array(
+          'isbn_id' => 'isbn_id',
+        ),
+      ),
+      'annotation_id' => array(
+        'table'   => 'content_cafe_annotation',
+        'columns' => array(
+          'annotation_id' => 'annotation_id',
+        ),
+      ),
+    ),
+  );
+
+  $schema['content_cafe_biography'] = array(
+    'description'  => 'The content_cafe biography table.',
+    'fields'       => array(
+      'biography_id'  => array(
+        'description' => 'The primary key of the table.',
+        'type'        => 'serial',
+        'unsigned'    => TRUE,
+        'not null'    => TRUE,
+      ),
+      'supplier_id'   => array(
+        'description' => 'The unique id from the content_cafe_supplier table.',
+        'type'        => 'int',
+        'unsigned'    => TRUE,
+        'not null'    => TRUE,
+      ),
+      'external_id'   => array(
+        'description' => 'The id returned from the API.',
+        'type'        => 'int',
+        'size'        => 'big',
+        'unsigned'    => TRUE,
+        'not null'    => TRUE,
+      ),
+      'biography'     => array(
+        'description' => 'The biography.',
+        'type'        => 'text',
+        'size'        => 'big',
+        'not null'    => TRUE,
+      ),
+    ),
+    'primary key'  => array('biography_id'),
+    'unique keys' => array(
+      'external_id' => array('external_id'),
+    ),
+    'foreign keys' => array(
+      'supplier_id' => array(
+        'table'   => 'content_cafe_supplier',
+        'columns' => array(
+          'supplier_id' => 'supplier_id',
+        ),
+      ),
+    ),
+  );
+
+  $schema['content_cafe_isbn_biography'] = array(
+    'description'  => 'The content_cafe ISBN biography bridge table.',
+    'fields'       => array(
+      'isbn_id'       => array(
+        'description' => 'The primary key of the content_cafe_isbn table.',
+        'type'        => 'int',
+        'unsigned'    => TRUE,
+        'not null'    => TRUE,
+      ),
+      'biography_id'  => array(
+        'description' => 'The primary key of the content_cafe_biography table.',
+        'type'        => 'int',
+        'unsigned'    => TRUE,
+        'not null'    => TRUE,
+      ),
+    ),
+    'primary key'  => array('isbn_id', 'biography_id'),
+    'foreign keys' => array(
+      'isbn_id' => array(
+        'table'   => 'content_cafe_isbn',
+        'columns' => array(
+          'isbn_id' => 'isbn_id',
+        ),
+      ),
+      'biography_id' => array(
+        'table'   => 'content_cafe_biography',
+        'columns' => array(
+          'biography_id' => 'biography_id',
+        ),
+      ),
+    ),
+  );
+
+  $schema['content_cafe_excerpt'] = array(
+    'description'  => 'The content_cafe excerpt table.',
+    'fields'       => array(
+      'excerpt_id'    => array(
+        'description' => 'The primary key of the table.',
+        'type'        => 'serial',
+        'unsigned'    => TRUE,
+        'not null'    => TRUE,
+      ),
+      'external_id'   => array(
+        'description' => 'The id returned from the API.',
+        'type'        => 'int',
+        'size'        => 'big',
+        'unsigned'    => TRUE,
+        'not null'    => TRUE,
+      ),
+      'excerpt'       => array(
+        'description' => 'The excerpt.',
+        'type'        => 'text',
+        'size'        => 'big',
+        'not null'    => TRUE,
+      ),
+    ),
+    'primary key'  => array('excerpt_id'),
+    'unique keys'  => array(
+      'external_id' => array('external_id'),
+    ),
+  );
+
+  $schema['content_cafe_isbn_excerpt'] = array(
+    'description'  => 'The content_cafe ISBN excerpt bridge table.',
+    'fields'       => array(
+      'isbn_id'       => array(
+        'description' => 'The primary key of the content_cafe_isbn table.',
+        'type'        => 'int',
+        'unsigned'    => TRUE,
+        'not null'    => TRUE,
+      ),
+      'excerpt_id'    => array(
+        'description' => 'The primary key of the content_cafe_excerpt table.',
+        'type'        => 'int',
+        'unsigned'    => TRUE,
+        'not null'    => TRUE,
+      ),
+    ),
+    'primary key'  => array('isbn_id', 'excerpt_id'),
+    'foreign keys' => array(
+      'isbn_id' => array(
+        'table'   => 'content_cafe_isbn',
+        'columns' => array(
+          'isbn_id' => 'isbn_id',
+        ),
+      ),
+      'excerpt_id' => array(
+        'table'   => 'content_cafe_excerpt',
+        'columns' => array(
+          'excerpt_id' => 'excerpt_id',
+        ),
+      ),
+    ),
+  );
+
+  $schema['content_cafe_flap'] = array(
+    'description'  => 'The content_cafe flap table.',
+    'fields'       => array(
+      'flap_id'       => array(
+        'description' => 'The primary key of the table.',
+        'type'        => 'serial',
+        'unsigned'    => TRUE,
+        'not null'    => TRUE,
+      ),
+      'supplier_id'   => array(
+        'description' => 'The unique id from the content_cafe_supplier table.',
+        'type'        => 'int',
+        'unsigned'    => TRUE,
+        'not null'    => TRUE,
+      ),
+      'external_id'   => array(
+        'description' => 'The id returned from the API.',
+        'type'        => 'int',
+        'size'        => 'big',
+        'unsigned'    => TRUE,
+        'not null'    => TRUE,
+      ),
+      'flap'          => array(
+        'description' => 'The flap.',
+        'type'        => 'text',
+        'size'        => 'big',
+        'not null'    => TRUE,
+      ),
+    ),
+    'primary key'  => array('flap_id'),
+    'unique keys'  => array(
+      'external_id' => array('external_id'),
+    ),
+    'foreign keys' => array(
+      'supplier_id' => array(
+        'table'   => 'content_cafe_supplier',
+        'columns' => array(
+          'supplier_id' => 'supplier_id',
+        ),
+      ),
+    ),
+  );
+
+  $schema['content_cafe_isbn_flap'] = array(
+    'description'  => 'The content_cafe ISBN flap bridge table.',
+    'fields'       => array(
+      'isbn_id'       => array(
+        'description' => 'The primary key of the content_cafe_isbn table.',
+        'type'        => 'int',
+        'unsigned'    => TRUE,
+        'not null'    => TRUE,
+      ),
+      'flap_id'       => array(
+        'description' => 'The primary key of the content_cafe_flap table.',
+        'type'        => 'int',
+        'unsigned'    => TRUE,
+        'not null'    => TRUE,
+      ),
+    ),
+    'primary key'  => array('isbn_id', 'flap_id'),
+    'foreign keys' => array(
+      'isbn_id' => array(
+        'table'   => 'content_cafe_isbn',
+        'columns' => array(
+          'isbn_id' => 'isbn_id',
+        ),
+      ),
+      'flap_id' => array(
+        'table'   => 'content_cafe_flap',
+        'columns' => array(
+          'flap_id' => 'flap_id',
+        ),
+      ),
+    ),
+  );
+
+  $schema['content_cafe_jacket'] = array(
+    'description'  => 'The content_cafe jacket table.',
+    'fields'       => array(
+      'jacket_id'     => array(
+        'description' => 'The primary key of the table.',
+        'type'        => 'serial',
+        'unsigned'    => TRUE,
+        'not null'    => TRUE,
+      ),
+      'external_id'   => array(
+        'description' => 'The id returned from the API.',
+        'type'        => 'int',
+        'size'        => 'big',
+        'unsigned'    => TRUE,
+        'not null'    => TRUE,
+      ),
+      'fid'           => array(
+        'description' => 'The fid.',
+        'type'        => 'int',
+        'unsigned'    => TRUE,
+        'not null'    => TRUE,
+      ),
+    ),
+    'primary key'  => array('jacket_id'),
+    'unique keys'  => array(
+      'external_id' => array('external_id'),
+    ),
+    'foreign keys' => array(
+      'fid' => array(
+        'table'   => 'file_managed',
+        'columns' => array(
+          'fid' => 'fid',
+        ),
+      ),
+    ),
+  );
+
+  $schema['content_cafe_isbn_jacket'] = array(
+    'description'  => 'The content_cafe ISBN jacket bridge table.',
+    'fields'       => array(
+      'isbn_id'       => array(
+        'description' => 'The primary key of the content_cafe_isbn table.',
+        'type'        => 'int',
+        'unsigned'    => TRUE,
+        'not null'    => TRUE,
+      ),
+      'jacket_id'     => array(
+        'description' => 'The primary key of the content_cafe_jacket table.',
+        'type'        => 'int',
+        'unsigned'    => TRUE,
+        'not null'    => TRUE,
+      ),
+    ),
+    'primary key'  => array('isbn_id', 'jacket_id'),
+    'foreign keys' => array(
+      'isbn_id' => array(
+        'table'   => 'content_cafe_isbn',
+        'columns' => array(
+          'isbn_id' => 'isbn_id',
+        ),
+      ),
+      'jacket_id' => array(
+        'table'   => 'content_cafe_jacket',
+        'columns' => array(
+          'jacket_id' => 'jacket_id',
+        ),
+      ),
+    ),
+  );
+
+  $schema['content_cafe_toc'] = array(
+    'description'  => 'The content_cafe toc table.',
+    'fields'       => array(
+      'toc_id'        => array(
+        'description' => 'The primary key of the table.',
+        'type'        => 'serial',
+        'unsigned'    => TRUE,
+        'not null'    => TRUE,
+      ),
+      'external_id'   => array(
+        'description' => 'The id returned from the API.',
+        'type'        => 'int',
+        'size'        => 'big',
+        'unsigned'    => TRUE,
+        'not null'    => TRUE,
+      ),
+      'toc'           => array(
+        'description' => 'The toc.',
+        'type'        => 'text',
+        'size'        => 'big',
+        'not null'    => TRUE,
+      ),
+    ),
+    'primary key'  => array('toc_id'),
+    'unique keys'  => array(
+      'external_id' => array('external_id'),
+    ),
+  );
+
+  $schema['content_cafe_isbn_toc'] = array(
+    'description'  => 'The content_cafe ISBN toc bridge table.',
+    'fields'       => array(
+      'isbn_id'       => array(
+        'description' => 'The primary key of the content_cafe_isbn table.',
+        'type'        => 'int',
+        'unsigned'    => TRUE,
+        'not null'    => TRUE,
+      ),
+      'toc_id'        => array(
+        'description' => 'The primary key of the content_cafe_toc table.',
+        'type'        => 'int',
+        'unsigned'    => TRUE,
+        'not null'    => TRUE,
+      ),
+    ),
+    'primary key'  => array('isbn_id', 'toc_id'),
+    'foreign keys' => array(
+      'isbn_id' => array(
+        'table'   => 'content_cafe_isbn',
+        'columns' => array(
+          'isbn_id' => 'isbn_id',
+        ),
+      ),
+      'toc_id' => array(
+        'table'   => 'content_cafe_toc',
+        'columns' => array(
+          'toc_id' => 'toc_id',
+        ),
+      ),
+    ),
+  );
+
+  $schema['node_content_cafe'] = array(
+    'description'  => 'The bridge table between node and content_cafe.',
+    'fields'       => array(
+      'isbn_id'       => array(
+        'description' => 'The id from the content_cafe_isbn table.',
+        'type'        => 'int',
+        'unsigned'    => TRUE,
+        'not null'    => TRUE,
+      ),
+      'nid'           => array(
+        'description' => 'The unique id from the node table.',
+        'type'        => 'int',
+        'unsigned'    => TRUE,
+        'not null'    => TRUE,
+      ),
+    ),
+    'primary key'  => array('isbn_id', 'nid'),
+    'foreign keys' => array(
+      'nid' => array(
+        'table'   => 'node',
+        'columns' => array(
+          'nid' => 'nid',
+        ),
+      ),
+      'isbn_id' => array(
+        'table'   => 'content_cafe_isbn',
+        'columns' => array(
+          'isbn_id' => 'isbn_id',
+        ),
+      ),
+    ),
+  );
+
+  return $schema;
+}

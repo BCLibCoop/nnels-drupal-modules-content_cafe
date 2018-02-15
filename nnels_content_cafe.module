@@ -1,0 +1,54 @@
+<?php
+
+module_load_include('inc', 'nnels_content_cafe', 'nnels_content_cafe.class');
+module_load_include('inc', 'nnels_content_cafe', 'nnels_content_cafe');
+
+/**
+ * Implements hook_permission().
+ */
+function nnels_content_cafe_permission() {
+  return array(
+    'administer nnels content cafe' => array(
+      'title'       => t('Administer NNELS content cafe'),
+      'description' => t('Perform administration tasks for NNELS content cafe.'),
+    ),
+  );
+}
+
+/**
+ * Implements hook_menu().
+ */
+function nnels_content_cafe_menu() {
+  $items = array();
+
+  $items['admin/config/nnels'] = array(
+    'title'            => 'NNELS Configuration',
+    'description'      => 'Manage configuration for NNELS Custom Modules.',
+    'position'         => 'right',
+    'page callback'    => 'system_admin_menu_block_page',
+    'access arguments' => array('administer nnels content cafe'),
+    'file'             => 'system.admin.inc',
+    'file path'        => drupal_get_path('module', 'system'),
+    'weight'           => 30,
+  );
+  $items['admin/config/nnels/settings'] = array(
+    'title'            => 'Settings',
+    'description'      => 'API Settings',
+    'page callback'    => 'drupal_get_form',
+    'page arguments'   => array('nnels_content_cafe_settings_form'),
+    'access arguments' => array('administer nnels content cafe'),
+    'file'             => 'nnels_content_cafe.admin.inc',
+    'file path'        => drupal_get_path('module', 'nnels_content_cafe'),
+  );
+  $items['admin/config/nnels/tests'] = array(
+    'title'            => 'Test Calls',
+    'description'      => 'Test Content Cafe API Calls',
+    'page callback'    => 'drupal_get_form',
+    'page arguments'   => array('nnels_content_cafe_test_form'),
+    'access arguments' => array('administer nnels content cafe'),
+    'file'             => 'nnels_content_cafe.admin.inc',
+    'file path'        => drupal_get_path('module', 'nnels_content_cafe'),
+  );
+
+   return $items;
+}
