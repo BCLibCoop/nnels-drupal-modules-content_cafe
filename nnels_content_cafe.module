@@ -50,5 +50,50 @@ function nnels_content_cafe_menu() {
     'file path'        => drupal_get_path('module', 'nnels_content_cafe'),
   );
 
-   return $items;
+  return $items;
+}
+
+function nnels_content_cafe_form_alter(&$form, &$form_state, $form_id) {
+  if ($form_id == 'repository_item_node_form') {
+
+    // Load the ISBN's attached to this node.
+    $isbns       = field_get_items('node', $form['#node'],'field_isbn');
+    $audio_isbns = field_get_items('node', $form['#node'],'field_isbn_audio');
+    $valid_isbns = array();
+    if ($isbns) {
+      foreach ($isbns as $isbn) {
+        if (nnels_content_cafe_validate_isbn($isbn['value'])) {
+          $valid_isbns[$isbn['value']] = TRUE;
+        }
+        else {
+          drupal_set_message(t('ISBN @isbn is invalid', array('@isbn' => $isbn['safe_value'])), 'warning');
+        }
+      }
+    }
+    if ($audio_isbns) {
+      foreach ($audio_isbns as $isbn) {
+        if (nnels_content_cafe_validate_isbn($isbn['value'])) {
+          $valid_isbns[$isbn['value']] = TRUE;
+        }
+        else {
+          drupal_set_message(t('Audio ISBN @isbn is invalid', array('@isbn' => $isbn['safe_value'])), 'warning');
+        }
+      }
+    }
+
+    // Load the ISBN's that have currently been retrieved.
+    $isbn_ids = nnels_content_cafe_select_multiple_content_cafe_isbn_rows(array_keys($valid_isbns));
+print_r($isbn_ids);
+exit;
+    $form['content_cafe'] = array(
+      '#type' => 'fieldset',
+      '#title' => 'Content Cafe',
+      '#group' => 'additional_settings',
+    );
+    $form['content_cafe']['test_field'] = array(
+      '#type' => 'textarea',
+      '#title' => 'Test',
+      '#tree' => true,
+    );
+  }
 }

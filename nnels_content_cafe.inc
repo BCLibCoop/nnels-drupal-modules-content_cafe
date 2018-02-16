@@ -1,6 +1,58 @@
 <?php
 
 /**
+ * Validate ISBN
+ *
+ * This function also modifies the ISBN if it contains any non-numeric
+ * characters.
+ *
+ * @param int $isbn
+ *
+ * @return bool
+ */
+function nnels_content_cafe_validate_isbn(&$isbn) {
+  $valid = FALSE;
+
+  // Clean the data - only digits.
+  $isbn = preg_replace('/[^\d]/', '', $isbn);
+
+  $isbn_length = strlen($isbn);
+  if ($isbn_length == 10) {
+    $numbers = str_split($isbn);
+    $sum     = 0;
+    $i       = 10;
+    foreach ($numbers as $number) {
+      $sum += ($number * $i);
+      $i--;
+    }
+    $mod = $sum % 11;
+    if ($mod == 0) {
+      $valid = TRUE;
+    }
+  }
+  elseif ($isbn_length == 13) {
+    $numbers = str_split($isbn);
+    $sum     = 0;
+    $i       = 1;
+    foreach ($numbers as $number) {
+      $sum += ($number * $i);
+      if ($i == 1) {
+        $i = 3;
+      }
+      else {
+        $i = 1;
+      }
+    }
+    $mod = $sum % 10;
+    if ($mod == 0) {
+      $valid = TRUE;
+    }
+  }
+
+  return $valid;
+}
+
+/**
  * Insert a row into the content_cafe_isbn table.
  *
  * @param string $isbn
@@ -262,6 +314,33 @@ function nnels_content_cafe_insert_node_content_cafe_row($nid, $isbn_id) {
       )
     )
     ->execute();
+}
+
+/**
+ * Select rows from the content_cafe_isbn table.
+ *
+ * @param array $isbns
+ *
+ * @return mixed
+ */
+function nnels_content_cafe_select_multiple_content_cafe_isbn_rows($isbns) {
+  $records = FALSE;
+
+  if (count($isbns)) {
+    $result = db_select('content_cafe_isbn', 'c')
+      ->fields('c')
+      ->condition('c.isbn', $isbns, 'IN')
+      ->execute();
+    
+    if ($result->rowCount()) {
+      $records = array();
+      while ($record = $result->fetchObject()) {
+        $records[$record->isbn_id] = $record->isbn;
+      }
+    }
+  }
+
+  return $records;
 }
 
 /**

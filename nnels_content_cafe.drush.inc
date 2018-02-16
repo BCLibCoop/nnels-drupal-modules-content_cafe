@@ -174,58 +174,6 @@ function nnels_content_cafe_load_isbn_data() {
 }
 
 /**
- * Validate ISBN
- *
- * This function also modifies the ISBN if it contains any non-numeric
- * characters.
- *
- * @param int $isbn
- *
- * @return bool
- */
-function nnels_content_cafe_validate_isbn(&$isbn) {
-  $valid = FALSE;
-
-  // Clean the data - only digits.
-  $isbn = preg_replace('/[^\d]/', '', $isbn);
-
-  $isbn_length = strlen($isbn);
-  if ($isbn_length == 10) {
-    $numbers = str_split($isbn);
-    $sum     = 0;
-    $i       = 10;
-    foreach ($numbers as $number) {
-      $sum += ($number * $i);
-      $i--;
-    }
-    $mod = $sum % 11;
-    if ($mod == 0) {
-      $valid = TRUE;
-    }
-  }
-  elseif ($isbn_length == 13) {
-    $numbers = str_split($isbn);
-    $sum     = 0;
-    $i       = 1;
-    foreach ($numbers as $number) {
-      $sum += ($number * $i);
-      if ($i == 1) {
-        $i = 3;
-      }
-      else {
-        $i = 1;
-      }
-    }
-    $mod = $sum % 10;
-    if ($mod == 0) {
-      $valid = TRUE;
-    }
-  }
-
-  return $valid;
-}
-
-/**
  * Retrieve Data from the API
  *
  * @param int $isbn
