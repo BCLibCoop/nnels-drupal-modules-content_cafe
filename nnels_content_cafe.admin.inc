@@ -589,12 +589,52 @@ function nnels_content_cafe_refresh($nid) {
  * @param array $form
  * @param array $form_state
  * @param int $nid
- * @param int $annotation_id
+ * @param int $external_id
  *
  * @return array
  */
-function nnels_content_cafe_annotation_edit_form($form, &$form_state, $nid, $annotation_id) {
-  return array();
+function nnels_content_cafe_annotation_edit_form($form, &$form_state, $nid, $external_id) {
+  $node       = node_load($nid);
+  $annotation = nnels_content_cafe_select_content_cafe_annotation_row($external_id);
+  drupal_set_title(t('Edit annotation %id for %node.', array('%id' => $external_id, '%node' => $node->title)), PASS_THROUGH);
+
+  $form = array();
+
+  $form['annotation'] = array(
+    '#type'          => 'text_format',
+    '#title'         => t('Annotation'),
+    '#default_value' => $annotation->annotation,
+    '#required'      => TRUE,
+  );
+
+  $form['actions'] = array(
+    '#type'          => 'actions',
+  );
+  $form['actions']['submit'] = array(
+    '#type'          => 'submit',
+    '#value'         => t('Save changes'),
+    '#suffix'        => l(t('Cancel'), 'node/' . $nid . '/content_cafe'),
+  );
+
+  return $form;
+}
+
+/**
+ * Annotation Edit Form Submit.
+ *
+ * @param array $form
+ * @param array $form_state
+ *
+ * @return void
+ */
+function nnels_content_cafe_annotation_edit_form_submit($form, &$form_state) {
+  $nid         = $form_state['build_info']['args'][0];
+  $external_id = $form_state['build_info']['args'][1];
+  $annotation  = $form_state['values']['annotation']['value'];
+  nnels_content_cafe_update_content_cafe_annotation_row($external_id, $annotation);
+
+  drupal_set_message(t('Annotation has been updated.'));
+  $form_state['redirect'] = 'node/' . $nid . '/content_cafe';
 }
 
 /**

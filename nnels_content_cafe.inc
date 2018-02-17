@@ -419,7 +419,6 @@ function nnels_content_cafe_select_multiple_content_cafe_supplier_rows($supplier
  * @return mixed
  */
 function nnels_content_cafe_select_content_cafe_annotation_row($external_id) {
-  print "Select from content_cafe_annotation\n";
   $result = db_select('content_cafe_annotation', 'a')
     ->fields('a')
     ->condition('a.external_id', $external_id)
@@ -694,4 +693,23 @@ function nnels_content_cafe_select_node_content_cafe_row($nid, $isbn_id) {
   }
 
   return $record;
+}
+
+/**
+ * Update a row in the content_cafe_annotation table.
+ *
+ * @param int $external_id
+ * @param string $annotation
+ *
+ * @return void
+ */
+function nnels_content_cafe_update_content_cafe_annotation_row($external_id, $annotation) {
+  db_update('content_cafe_annotation')
+    ->fields(
+      array(
+        'annotation' => $annotation,
+      )
+    )
+    ->condition('external_id', $external_id)
+    ->execute();
 }
