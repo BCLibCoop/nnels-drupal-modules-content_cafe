@@ -21,6 +21,7 @@ function nnels_content_cafe_permission() {
 function nnels_content_cafe_menu() {
   $items = array();
 
+  // Settings Pages
   $items['admin/config/nnels'] = array(
     'title'            => 'NNELS Configuration',
     'description'      => 'Manage configuration for NNELS Custom Modules.',
@@ -50,7 +51,96 @@ function nnels_content_cafe_menu() {
     'file path'        => drupal_get_path('module', 'nnels_content_cafe'),
   );
 
+  // Node Pages
+  $items['node/%/content_cafe'] = array(
+    'title'            => 'Content Cafe',
+    'description'      => 'Data from the Content Cafe API',
+    'page callback'    => 'drupal_get_form',
+    'page arguments'   => array('nnels_content_cafe_overview_form', 1),
+    'access arguments' => array('administer nnels content cafe'),
+    'file'             => 'nnels_content_cafe.admin.inc',
+    'file path'        => drupal_get_path('module', 'nnels_content_cafe'),
+    'type'             => MENU_LOCAL_TASK,
+    'weight'           => 50,
+  );
+  $items['node/%/content_cafe/refresh'] = array(
+    'title'            => 'Refresh Data from API',
+    'description'      => 'Refresh Data from the Content Cafe API',
+    'page callback'    => 'nnels_content_cafe_refresh',
+    'page arguments'   => array(1),
+    'access arguments' => array('administer nnels content cafe'),
+    'file'             => 'nnels_content_cafe.admin.inc',
+    'file path'        => drupal_get_path('module', 'nnels_content_cafe'),
+    'type'             => MENU_LOCAL_ACTION,
+  );
+  $items['node/%/content_cafe/annotation/%/edit'] = array(
+    'title'            => 'Edit Annotation',
+    'description'      => 'Edit a specic annotation for a repository item.',
+    'page callback'    => 'drupal_get_form',
+    'page arguments'   => array('nnels_content_cafe_annotation_edit_form', 1, 4),
+    'access arguments' => array('administer nnels content cafe'),
+    'file'             => 'nnels_content_cafe.admin.inc',
+    'file path'        => drupal_get_path('module', 'nnels_content_cafe'),
+  );
+  $items['node/%/content_cafe/biography/%/edit'] = array(
+    'title'            => 'Edit Biography',
+    'description'      => 'Edit a specic biography for a repository item.',
+    'page callback'    => 'drupal_get_form',
+    'page arguments'   => array('nnels_content_cafe_biography_edit_form', 1, 4),
+    'access arguments' => array('administer nnels content cafe'),
+    'file'             => 'nnels_content_cafe.admin.inc',
+    'file path'        => drupal_get_path('module', 'nnels_content_cafe'),
+  );
+  $items['node/%/content_cafe/excerpt/%/edit'] = array(
+    'title'            => 'Edit Excerpt',
+    'description'      => 'Edit a specic excerpt for a repository item.',
+    'page callback'    => 'drupal_get_form',
+    'page arguments'   => array('nnels_content_cafe_excerpt_edit_form', 1, 4),
+    'access arguments' => array('administer nnels content cafe'),
+    'file'             => 'nnels_content_cafe.admin.inc',
+    'file path'        => drupal_get_path('module', 'nnels_content_cafe'),
+  );
+  $items['node/%/content_cafe/flap/%/edit'] = array(
+    'title'            => 'Edit Flap',
+    'description'      => 'Edit a specic flap for a repository item.',
+    'page callback'    => 'drupal_get_form',
+    'page arguments'   => array('nnels_content_cafe_flap_edit_form', 1, 4),
+    'access arguments' => array('administer nnels content cafe'),
+    'file'             => 'nnels_content_cafe.admin.inc',
+    'file path'        => drupal_get_path('module', 'nnels_content_cafe'),
+  );
+  $items['node/%/content_cafe/jacket/%/edit'] = array(
+    'title'            => 'Edit Jacket',
+    'description'      => 'Edit a specic jacket for a repository item.',
+    'page callback'    => 'drupal_get_form',
+    'page arguments'   => array('nnels_content_cafe_jacket_edit_form', 1, 4),
+    'access arguments' => array('administer nnels content cafe'),
+    'file'             => 'nnels_content_cafe.admin.inc',
+    'file path'        => drupal_get_path('module', 'nnels_content_cafe'),
+  );
+  $items['node/%/content_cafe/toc/%/edit'] = array(
+    'title'            => 'Edit TOC',
+    'description'      => 'Edit a specic toc for a repository item.',
+    'page callback'    => 'drupal_get_form',
+    'page arguments'   => array('nnels_content_cafe_toc_edit_form', 1, 4),
+    'access arguments' => array('administer nnels content cafe'),
+    'file'             => 'nnels_content_cafe.admin.inc',
+    'file path'        => drupal_get_path('module', 'nnels_content_cafe'),
+  );
+
   return $items;
+}
+
+/**
+ * Implements hook_admin_paths().
+ */
+function nnels_content_cafe_admin_paths() {
+  $paths = array(
+    'node/*/content_cafe'   => TRUE,
+    'node/*/content_cafe/*' => TRUE,
+  );
+
+  return $paths;
 }
 
 function nnels_content_cafe_form_alter(&$form, &$form_state, $form_id) {
@@ -83,8 +173,8 @@ function nnels_content_cafe_form_alter(&$form, &$form_state, $form_id) {
 
     // Load the ISBN's that have currently been retrieved.
     $isbn_ids = nnels_content_cafe_select_multiple_content_cafe_isbn_rows(array_keys($valid_isbns));
-print_r($isbn_ids);
-exit;
+// print_r($isbn_ids);
+// exit;
     $form['content_cafe'] = array(
       '#type' => 'fieldset',
       '#title' => 'Content Cafe',

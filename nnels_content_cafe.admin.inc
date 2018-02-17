@@ -243,3 +243,74 @@ function nnels_content_cafe_test_form_submit($form, $form_state) {
     'response' => $api->Execute(),
   );
 }
+
+function nnels_content_cafe_overview_form($form, &$form_state, $nid) {
+  $node = node_load($nid);
+  drupal_set_title(t('Manage Content Cafe data for %node', array('%node' => $node->title)), PASS_THROUGH);
+
+  $form['tabs'] = array(
+    '#type' => 'vertical_tabs',
+    '#tree' => TRUE,
+  );
+
+  $form['tabs']['content_cafe'] = array(
+    '#type' => 'fieldset',
+    '#title' => 'Content Cafe',
+    '#group' => 'tabs',
+    '#weight' => 0,
+  );
+  $form['tabs']['content_cafe']['test_field'] = array(
+    '#type' => 'textarea',
+    '#title' => 'Test',
+  );
+
+  $form['tabs']['content_cafe2'] = array(
+    '#type' => 'fieldset',
+    '#title' => 'Content Cafe',
+    '#group' => 'tabs',
+    '#weight' => 1,
+  );
+  $form['tabs']['content_cafe2']['test_field'] = array(
+    '#type' => 'textarea',
+    '#title' => 'Test',
+  );
+
+
+  $form['actions'] = array(
+    '#type' => 'actions',
+  );
+  $form['actions']['submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Save data'),
+  );
+
+  return $form;
+}
+
+function nnels_content_cafe_refresh($nid) {
+  return array();
+}
+
+function nnels_content_cafe_annotation_edit_form($form, &$form_state, $nid, $annotation_id) {
+  return array();
+}
+
+function nnels_content_cafe_biography_edit_form($form, &$form_state, $nid, $biography_id) {
+  return array();
+}
+
+function nnels_content_cafe_excerpt_edit_form($form, &$form_state, $nid, $excerpt_id) {
+  return array();
+}
+
+function nnels_content_cafe_flap_edit_form($form, &$form_state, $nid, $flap_id) {
+  return array();
+}
+
+function nnels_content_cafe_jacket_edit_form($form, &$form_state, $nid, $jacket_id) {
+  return array();
+}
+
+function nnels_content_cafe_toc_edit_form($form, &$form_state, $nid, $toc_id) {
+  return array();
+}
