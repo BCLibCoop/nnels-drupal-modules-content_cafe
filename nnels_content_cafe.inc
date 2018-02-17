@@ -388,6 +388,30 @@ function nnels_content_cafe_select_content_cafe_supplier_row($supplier_code) {
 }
 
 /**
+ * Select multiple rows from the content_cafe_supplier table.
+ *
+ * @param array $supplier_ids
+ *
+ * @return mixed
+ */
+function nnels_content_cafe_select_multiple_content_cafe_supplier_rows($supplier_ids) {
+  $records = FALSE;
+
+  if (count($supplier_ids)) {
+    $result = db_select('content_cafe_supplier', 's')
+      ->fields('s')
+      ->condition('s.supplier_id', $supplier_ids, 'IN')
+      ->execute();
+
+    while ($record = $result->fetchObject()) {
+      $records[$record->supplier_id] = $record;
+    }
+  }
+
+  return $records;
+}
+
+/**
  * Select a row from the content_cafe_annotation table.
  *
  * @param int $external_id
@@ -407,6 +431,37 @@ function nnels_content_cafe_select_content_cafe_annotation_row($external_id) {
   }
 
   return $record;
+}
+
+/**
+ * Select rows from the content_cafe_annotation table.
+ *
+ * @param array $isbns
+ * @param array $supplier_ids
+ *
+ * @return mixed
+ */
+function nnels_content_cafe_select_multiple_content_cafe_annotation_rows($isbns, &$supplier_ids) {
+  $records = FALSE;
+
+  if (count($isbns)) {
+    $query = db_select('content_cafe_isbn_annotation', 'i');
+    $query->join('content_cafe_annotation', 'c', 'c.annotation_id = i.annotation_id');
+    $query->fields('i');
+    $query->fields('c');
+    $query->condition('i.isbn_id', $isbns, 'IN');
+    $result = $query->execute();
+    
+    if ($result->rowCount()) {
+      $records = array();
+      while ($record = $result->fetchObject()) {
+        $records[$record->annotation_id]    = $record;
+        $supplier_ids[$record->supplier_id] = TRUE;
+      }
+    }
+  }
+
+  return $records;
 }
 
 /**
@@ -432,6 +487,37 @@ function nnels_content_cafe_select_content_cafe_biography_row($external_id) {
 }
 
 /**
+ * Select rows from the content_cafe_biography table.
+ *
+ * @param array $isbns
+ * @param array $supplier_ids
+ *
+ * @return mixed
+ */
+function nnels_content_cafe_select_multiple_content_cafe_biography_rows($isbns, &$supplier_ids) {
+  $records = FALSE;
+
+  if (count($isbns)) {
+    $query = db_select('content_cafe_isbn_biography', 'i');
+    $query->join('content_cafe_biography', 'c', 'c.biography_id = i.biography_id');
+    $query->fields('i');
+    $query->fields('c');
+    $query->condition('i.isbn_id', $isbns, 'IN');
+    $result = $query->execute();
+    
+    if ($result->rowCount()) {
+      $records = array();
+      while ($record = $result->fetchObject()) {
+        $records[$record->biography_id]    = $record;
+        $supplier_ids[$record->supplier_id] = TRUE;
+      }
+    }
+  }
+
+  return $records;
+}
+
+/**
  * Select a row from the content_cafe_excerpt table.
  *
  * @param int $external_id
@@ -451,6 +537,35 @@ function nnels_content_cafe_select_content_cafe_excerpt_row($external_id) {
   }
 
   return $record;
+}
+
+/**
+ * Select rows from the content_cafe_excerpt table.
+ *
+ * @param array $isbns
+ *
+ * @return mixed
+ */
+function nnels_content_cafe_select_multiple_content_cafe_excerpt_rows($isbns) {
+  $records = FALSE;
+
+  if (count($isbns)) {
+    $query = db_select('content_cafe_isbn_excerpt', 'i');
+    $query->join('content_cafe_excerpt', 'c', 'c.excerpt_id = i.excerpt_id');
+    $query->fields('i');
+    $query->fields('c');
+    $query->condition('i.isbn_id', $isbns, 'IN');
+    $result = $query->execute();
+    
+    if ($result->rowCount()) {
+      $records = array();
+      while ($record = $result->fetchObject()) {
+        $records[$record->excerpt_id] = $record;
+      }
+    }
+  }
+
+  return $records;
 }
 
 /**
@@ -476,6 +591,37 @@ function nnels_content_cafe_select_content_cafe_flap_row($external_id) {
 }
 
 /**
+ * Select rows from the content_cafe_flap table.
+ *
+ * @param array $isbns
+ * @param array $supplier_ids
+ *
+ * @return mixed
+ */
+function nnels_content_cafe_select_multiple_content_cafe_flap_rows($isbns, &$supplier_ids) {
+  $records = FALSE;
+
+  if (count($isbns)) {
+    $query = db_select('content_cafe_isbn_flap', 'i');
+    $query->join('content_cafe_flap', 'c', 'c.flap_id = i.flap_id');
+    $query->fields('i');
+    $query->fields('c');
+    $query->condition('i.isbn_id', $isbns, 'IN');
+    $result = $query->execute();
+    
+    if ($result->rowCount()) {
+      $records = array();
+      while ($record = $result->fetchObject()) {
+        $records[$record->flap_id]    = $record;
+        $supplier_ids[$record->supplier_id] = TRUE;
+      }
+    }
+  }
+
+  return $records;
+}
+
+/**
  * Select a row from the content_cafe_toc table.
  *
  * @param int $external_id
@@ -495,6 +641,35 @@ function nnels_content_cafe_select_content_cafe_toc_row($external_id) {
   }
 
   return $record;
+}
+
+/**
+ * Select rows from the content_cafe_toc table.
+ *
+ * @param array $isbns
+ *
+ * @return mixed
+ */
+function nnels_content_cafe_select_multiple_content_cafe_toc_rows($isbns) {
+  $records = FALSE;
+
+  if (count($isbns)) {
+    $query = db_select('content_cafe_isbn_toc', 'i');
+    $query->join('content_cafe_toc', 'c', 'c.toc_id = i.toc_id');
+    $query->fields('i');
+    $query->fields('c');
+    $query->condition('i.isbn_id', $isbns, 'IN');
+    $result = $query->execute();
+    
+    if ($result->rowCount()) {
+      $records = array();
+      while ($record = $result->fetchObject()) {
+        $records[$record->toc_id] = $record;
+      }
+    }
+  }
+
+  return $records;
 }
 
 /**

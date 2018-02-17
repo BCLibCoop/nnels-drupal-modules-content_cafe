@@ -248,33 +248,119 @@ function nnels_content_cafe_overview_form($form, &$form_state, $nid) {
   $node = node_load($nid);
   drupal_set_title(t('Manage Content Cafe data for %node', array('%node' => $node->title)), PASS_THROUGH);
 
+  // Load ISBN's associated with this node.
+  $isbns       = field_get_items('node', $node,'field_isbn');
+  $audio_isbns = field_get_items('node', $node,'field_isbn_audio');
+  $valid_isbns = array();
+  if ($isbns) {
+    foreach ($isbns as $isbn) {
+      if (nnels_content_cafe_validate_isbn($isbn['value'])) {
+        $valid_isbns[$isbn['value']] = TRUE;
+      }
+      else {
+        drupal_set_message(t('ISBN @isbn is invalid', array('@isbn' => $isbn['safe_value'])), 'warning');
+      }
+    }
+  }
+  if ($audio_isbns) {
+    foreach ($audio_isbns as $isbn) {
+      if (nnels_content_cafe_validate_isbn($isbn['value'])) {
+        $valid_isbns[$isbn['value']] = TRUE;
+      }
+      else {
+        drupal_set_message(t('Audio ISBN @isbn is invalid', array('@isbn' => $isbn['safe_value'])), 'warning');
+      }
+    }
+  }
+
+  // Load all data for the 
+  $isbns        = nnels_content_cafe_select_multiple_content_cafe_isbn_rows(array_keys($valid_isbns));
+  $isbn_ids     = array_keys($isbns);
+  $supplier_ids = array();
+  $annotations = nnels_content_cafe_select_multiple_content_cafe_annotation_rows($isbn_ids, $supplier_ids);
+  $biographies = nnels_content_cafe_select_multiple_content_cafe_biography_rows($isbn_ids, $supplier_ids);
+  $excerpts    = nnels_content_cafe_select_multiple_content_cafe_excerpt_rows($isbn_ids);
+  $flaps       = nnels_content_cafe_select_multiple_content_cafe_flap_rows($isbn_ids, $supplier_ids);
+  // $jackets     = nnels_content_cafe_select_multiple_content_cafe_jacket_rows($isbn_ids, $supplier_ids);
+  $tocs        = nnels_content_cafe_select_multiple_content_cafe_toc_rows($isbn_ids);
+  $suppliers   = nnels_content_cafe_select_multiple_content_cafe_supplier_rows(array_keys($supplier_ids));
+
   $form['tabs'] = array(
     '#type' => 'vertical_tabs',
     '#tree' => TRUE,
   );
 
-  $form['tabs']['content_cafe'] = array(
+  // Annotations
+  $form['tabs']['annotations'] = array(
     '#type' => 'fieldset',
-    '#title' => 'Content Cafe',
+    '#title' => 'Annotations',
     '#group' => 'tabs',
     '#weight' => 0,
   );
-  $form['tabs']['content_cafe']['test_field'] = array(
+  $form['tabs']['annotations']['test_field'] = array(
     '#type' => 'textarea',
     '#title' => 'Test',
   );
 
-  $form['tabs']['content_cafe2'] = array(
+  // Biographies
+  $form['tabs']['biographies'] = array(
     '#type' => 'fieldset',
-    '#title' => 'Content Cafe',
+    '#title' => 'Biographies',
     '#group' => 'tabs',
     '#weight' => 1,
   );
-  $form['tabs']['content_cafe2']['test_field'] = array(
+  $form['tabs']['biographies']['test_field'] = array(
+    '#type' => 'textarea',
+    '#title' => 'Test',
+  );
+    
+  // Excerpts
+  $form['tabs']['excerpts'] = array(
+    '#type' => 'fieldset',
+    '#title' => 'Excerpts',
+    '#group' => 'tabs',
+    '#weight' => 1,
+  );
+  $form['tabs']['excerpts']['test_field'] = array(
     '#type' => 'textarea',
     '#title' => 'Test',
   );
 
+  // Flaps
+  $form['tabs']['flaps'] = array(
+    '#type' => 'fieldset',
+    '#title' => 'Flaps',
+    '#group' => 'tabs',
+    '#weight' => 1,
+  );
+  $form['tabs']['flaps']['test_field'] = array(
+    '#type' => 'textarea',
+    '#title' => 'Test',
+  );
+    
+  // Jackets
+  $form['tabs']['jackets'] = array(
+    '#type' => 'fieldset',
+    '#title' => 'Jackets',
+    '#group' => 'tabs',
+    '#weight' => 1,
+  );
+  $form['tabs']['jackets']['test_field'] = array(
+    '#type' => 'textarea',
+    '#title' => 'Test',
+  );
+
+  // TOC's
+  $form['tabs']['tocs'] = array(
+    '#type' => 'fieldset',
+    '#title' => 'TOC\'s',
+    '#group' => 'tabs',
+    '#weight' => 1,
+  );
+  $form['tabs']['tocs']['test_field'] = array(
+    '#type' => 'textarea',
+    '#title' => 'Test',
+  );
 
   $form['actions'] = array(
     '#type' => 'actions',
