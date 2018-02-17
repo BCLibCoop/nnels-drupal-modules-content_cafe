@@ -63,9 +63,9 @@ function nnels_content_cafe_menu() {
     'type'             => MENU_LOCAL_TASK,
     'weight'           => 50,
   );
-  $items['node/%/content_cafe/refresh'] = array(
-    'title'            => 'Refresh Data from API',
-    'description'      => 'Refresh Data from the Content Cafe API',
+  $items['node/%/content_cafe/fetch'] = array(
+    'title'            => 'Fetch Data from API',
+    'description'      => 'Fetch Data from the Content Cafe API',
     'page callback'    => 'nnels_content_cafe_refresh',
     'page arguments'   => array(1),
     'access arguments' => array('administer nnels content cafe'),
