@@ -402,7 +402,7 @@ function nnels_content_cafe_overview_annotation_form($nid, $isbns, $annotations,
     $form['#options'][$annotation_id] = array(
       'isbn'     => $isbns[$annotation->isbn_id],
       'supplier' => $suppliers[$annotation->supplier_id]->supplier_name,
-      'edit'     => l('Edit/View', 'node/' . $nid . '/content_cafe/annotation/' . $annotation_id . '/edit'),
+      'edit'     => l('Edit/View', 'node/' . $nid . '/content_cafe/annotation/' . $annotation->external_id . '/edit'),
     );
   }
 
@@ -436,7 +436,7 @@ function nnels_content_cafe_overview_biography_form($nid, $isbns, $biographies, 
     $form['#options'][$biography_id] = array(
       'isbn'     => $isbns[$biography->isbn_id],
       'supplier' => $suppliers[$biography->supplier_id]->supplier_name,
-      'edit'     => l('Edit/View', 'node/' . $nid . '/content_cafe/biography/' . $biography_id . '/edit'),
+      'edit'     => l('Edit/View', 'node/' . $nid . '/content_cafe/biography/' . $biography->external_id . '/edit'),
     );
   }
 
@@ -467,7 +467,7 @@ function nnels_content_cafe_overview_excerpt_form($nid, $isbns, $excerpts) {
   foreach ($excerpts as $excerpt_id => $excerpt) {
     $form['#options'][$excerpt_id] = array(
       'isbn'     => $isbns[$excerpt->isbn_id],
-      'edit'     => l('Edit/View', 'node/' . $nid . '/content_cafe/excerpt/' . $excerpt_id . '/edit'),
+      'edit'     => l('Edit/View', 'node/' . $nid . '/content_cafe/excerpt/' . $excerpt->external_id . '/edit'),
     );
   }
 
@@ -501,7 +501,7 @@ function nnels_content_cafe_overview_flap_form($nid, $isbns, $flaps, $suppliers)
     $form['#options'][$flap_id] = array(
       'isbn'     => $isbns[$flap->isbn_id],
       'supplier' => $suppliers[$flap->supplier_id]->supplier_name,
-      'edit'     => l('Edit/View', 'node/' . $nid . '/content_cafe/biography/' . $flap_id . '/edit'),
+      'edit'     => l('Edit/View', 'node/' . $nid . '/content_cafe/biography/' . $flap->external_id . '/edit'),
     );
   }
 
@@ -533,7 +533,7 @@ function nnels_content_cafe_overview_jacket_form($nid, $isbns, $jackets) {
     $form['#options'][$jacket_id] = array(
       'isbn'     => $isbns[$jacket->isbn_id],
       'supplier' => $suppliers[$jacket->supplier_id]->supplier_name,
-      'edit'     => l('Edit/View', 'node/' . $nid . '/content_cafe/biography/' . $jacket_id . '/edit'),
+      'edit'     => l('Edit/View', 'node/' . $nid . '/content_cafe/biography/' . $jacket->external_id . '/edit'),
     );
   }
 
@@ -565,7 +565,7 @@ function nnels_content_cafe_overview_toc_form($nid, $isbns, $tocs) {
     $form['#options'][$toc_id] = array(
       'isbn'     => $isbns[$toc->isbn_id],
       'supplier' => $suppliers[$toc->supplier_id]->supplier_name,
-      'edit'     => l('Edit/View', 'node/' . $nid . '/content_cafe/biography/' . $toc_id . '/edit'),
+      'edit'     => l('Edit/View', 'node/' . $nid . '/content_cafe/biography/' . $toc->external_id . '/edit'),
     );
   }
 
