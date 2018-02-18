@@ -291,7 +291,7 @@ function nnels_content_cafe_overview_form($form, &$form_state, $nid) {
     }
   }
 
-  // Load all data for the 
+  // Load all data for the node.
   $isbns        = nnels_content_cafe_select_multiple_content_cafe_isbn_rows(array_keys($valid_isbns));
   $isbn_ids     = array_keys($isbns);
   $supplier_ids = array();
@@ -373,6 +373,116 @@ function nnels_content_cafe_overview_form($form, &$form_state, $nid) {
   );
 
   return $form;
+}
+
+/**
+ * Overview Form Submit.
+ *
+ * @param array $form
+ * @param array $form_state
+ *
+ * @return void
+ */
+function nnels_content_cafe_overview_form_submit($form, &$form_state) {
+  $selected_annotation_id = $form_state['values']['tabs']['annotations']['table'];
+  $selected_biography_id  = $form_state['values']['tabs']['biographies']['table'];
+  $selected_excerpt_id    = $form_state['values']['tabs']['excerpts']['table'];
+  $selected_flap_id       = $form_state['values']['tabs']['flaps']['table'];
+  $selected_jacket_id     = $form_state['values']['tabs']['jackets']['table'];
+  $selected_toc_id        = $form_state['values']['tabs']['tocs']['table'];
+
+  $node = node_load($form_state['build_info']['args'][0]);
+  drupal_set_title(t('Manage Content Cafe data for %node', array('%node' => $node->title)), PASS_THROUGH);
+
+  // Load ISBN's associated with this node.
+  $isbns       = field_get_items('node', $node,'field_isbn');
+  $audio_isbns = field_get_items('node', $node,'field_isbn_audio');
+  $valid_isbns = array();
+  if ($isbns) {
+    foreach ($isbns as $isbn) {
+      if (nnels_content_cafe_validate_isbn($isbn['value'])) {
+        $valid_isbns[$isbn['value']] = TRUE;
+      }
+    }
+  }
+  if ($audio_isbns) {
+    foreach ($audio_isbns as $isbn) {
+      if (nnels_content_cafe_validate_isbn($isbn['value'])) {
+        $valid_isbns[$isbn['value']] = TRUE;
+      }
+    }
+  }
+
+  // Load all data for the node.
+  $isbns        = nnels_content_cafe_select_multiple_content_cafe_isbn_rows(array_keys($valid_isbns));
+  $isbn_ids     = array_keys($isbns);
+  $supplier_ids = array();
+  $annotations  = nnels_content_cafe_select_multiple_content_cafe_annotation_rows($isbn_ids, $supplier_ids);
+  $biographies  = nnels_content_cafe_select_multiple_content_cafe_biography_rows($isbn_ids, $supplier_ids);
+  $excerpts     = nnels_content_cafe_select_multiple_content_cafe_excerpt_rows($isbn_ids);
+  $flaps        = nnels_content_cafe_select_multiple_content_cafe_flap_rows($isbn_ids, $supplier_ids);
+  // $jackets     = nnels_content_cafe_select_multiple_content_cafe_jacket_rows($isbn_ids, $supplier_ids);
+  $tocs         = nnels_content_cafe_select_multiple_content_cafe_toc_rows($isbn_ids);
+  $suppliers    = nnels_content_cafe_select_multiple_content_cafe_supplier_rows(array_keys($supplier_ids));
+
+  // Update selected annotation.
+  foreach ($annotations as $annotation_id => $annotation) {
+    if ($annotation_id == $selected_annotation_id) {
+      $annotation->selected = TRUE;
+    }
+    else {
+      $annotation->selected = FALSE;
+    }
+    nnels_content_cafe_update_content_cafe_isbn_annotation_row($annotation_id, $annotation->selected);
+  }
+
+  // Update selected biography.
+  foreach ($biographies as $biography_id => $biography) {
+    if ($biography_id == $selected_biography_id) {
+      $biography->selected = TRUE;
+    }
+    else {
+      $biography->selected = FALSE;
+    }
+    nnels_content_cafe_update_content_cafe_isbn_biography_row($biography_id, $biography->selected);
+  }
+
+  // Update selected excerpt.
+  foreach ($excerpts as $excerpt_id => $excerpt) {
+    if ($excerpt_id == $selected_excerpt_id) {
+      $excerpt->selected = TRUE;
+    }
+    else {
+      $excerpt->selected = FALSE;
+    }
+    nnels_content_cafe_update_content_cafe_isbn_excerpt_row($excerpt_id, $excerpt->selected);
+  }
+
+  // Update selected flap.
+  foreach ($flaps as $flap_id => $flap) {
+    if ($flap_id == $selected_flap_id) {
+      $flap->selected = TRUE;
+    }
+    else {
+      $flap->selected = FALSE;
+    }
+    nnels_content_cafe_update_content_cafe_isbn_flap_row($flap_id, $flap->selected);
+  }
+
+  // Update selected jacket.
+
+  // Update selected toc.
+  foreach ($tocs as $toc_id => $toc) {
+    if ($toc_id == $selected_toc_id) {
+      $toc->selected = TRUE;
+    }
+    else {
+      $toc->selected = FALSE;
+    }
+    nnels_content_cafe_update_content_cafe_isbn_toc_row($toc_id, $toc->selected);
+  }
+
+  drupal_set_message(t('Selected data saved successfully.'));
 }
 
 /**

@@ -765,6 +765,25 @@ function nnels_content_cafe_update_content_cafe_annotation_row($external_id, $an
 }
 
 /**
+ * Update a row in the content_cafe_isbn_annotation table.
+ *
+ * @param int $annotation_id
+ * @param bool $selected
+ *
+ * @return void
+ */
+function nnels_content_cafe_update_content_cafe_isbn_annotation_row($annotation_id, $selected) {
+  db_update('content_cafe_isbn_annotation')
+    ->fields(
+      array(
+        'selected' => (int)$selected,
+      )
+    )
+    ->condition('annotation_id', $annotation_id)
+    ->execute();
+}
+
+/**
  * Update a row in the content_cafe_biography table.
  *
  * @param int $external_id
@@ -780,6 +799,25 @@ function nnels_content_cafe_update_content_cafe_biography_row($external_id, $bio
       )
     )
     ->condition('external_id', $external_id)
+    ->execute();
+}
+
+/**
+ * Update a row in the content_cafe_isbn_biography table.
+ *
+ * @param int $biography_id
+ * @param bool $selected
+ *
+ * @return void
+ */
+function nnels_content_cafe_update_content_cafe_isbn_biography_row($biography_id, $selected) {
+  db_update('content_cafe_isbn_biography')
+    ->fields(
+      array(
+        'selected' => (int)$selected,
+      )
+    )
+    ->condition('biography_id', $biography_id)
     ->execute();
 }
 
@@ -803,6 +841,25 @@ function nnels_content_cafe_update_content_cafe_excerpt_row($external_id, $excer
 }
 
 /**
+ * Update a row in the content_cafe_isbn_excerpt table.
+ *
+ * @param int $excerpt_id
+ * @param bool $selected
+ *
+ * @return void
+ */
+function nnels_content_cafe_update_content_cafe_isbn_excerpt_row($excerpt_id, $selected) {
+  db_update('content_cafe_isbn_excerpt')
+    ->fields(
+      array(
+        'selected' => (int)$selected,
+      )
+    )
+    ->condition('excerpt_id', $excerpt_id)
+    ->execute();
+}
+
+/**
  * Update a row in the content_cafe_flap table.
  *
  * @param int $external_id
@@ -822,6 +879,25 @@ function nnels_content_cafe_update_content_cafe_flap_row($external_id, $flap) {
 }
 
 /**
+ * Update a row in the content_cafe_isbn_flap table.
+ *
+ * @param int $flap_id
+ * @param bool $selected
+ *
+ * @return void
+ */
+function nnels_content_cafe_update_content_cafe_isbn_flap_row($flap_id, $selected) {
+  db_update('content_cafe_isbn_flap')
+    ->fields(
+      array(
+        'selected' => (int)$selected,
+      )
+    )
+    ->condition('flap_id', $flap_id)
+    ->execute();
+}
+
+/**
  * Update a row in the content_cafe_toc table.
  *
  * @param int $external_id
@@ -837,5 +913,24 @@ function nnels_content_cafe_update_content_cafe_toc_row($external_id, $toc) {
       )
     )
     ->condition('external_id', $external_id)
+    ->execute();
+}
+
+/**
+ * Update a row in the content_cafe_isbn_toc table.
+ *
+ * @param int $toc_id
+ * @param bool $selected
+ *
+ * @return void
+ */
+function nnels_content_cafe_update_content_cafe_isbn_toc_row($toc_id, $selected) {
+  db_update('content_cafe_isbn_toc')
+    ->fields(
+      array(
+        'selected' => (int)$selected,
+      )
+    )
+    ->condition('toc_id', $toc_id)
     ->execute();
 }
