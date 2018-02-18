@@ -114,6 +114,12 @@ function nnels_content_cafe_schema() {
         'unsigned'    => TRUE,
         'not null'    => TRUE,
       ),
+      'selected'      => array(
+        'description' => 'The selected flag, determines which record to use.',
+        'type'        => 'int',
+        'size'        => 'tiny',
+        'unsigned'    => TRUE,
+      ),
     ),
     'primary key'  => array('isbn_id', 'annotation_id'),
     'foreign keys' => array(
@@ -205,6 +211,12 @@ function nnels_content_cafe_schema() {
           'biography_id' => 'biography_id',
         ),
       ),
+      'selected'      => array(
+        'description' => 'The selected flag, determines which record to use.',
+        'type'        => 'int',
+        'size'        => 'tiny',
+        'unsigned'    => TRUE,
+      ),
     ),
   );
 
@@ -267,6 +279,12 @@ function nnels_content_cafe_schema() {
           'excerpt_id' => 'excerpt_id',
         ),
       ),
+      'selected'      => array(
+        'description' => 'The selected flag, determines which record to use.',
+        'type'        => 'int',
+        'size'        => 'tiny',
+        'unsigned'    => TRUE,
+      ),
     ),
   );
 
@@ -327,6 +345,12 @@ function nnels_content_cafe_schema() {
         'type'        => 'int',
         'unsigned'    => TRUE,
         'not null'    => TRUE,
+      ),
+      'selected'      => array(
+        'description' => 'The selected flag, determines which record to use.',
+        'type'        => 'int',
+        'size'        => 'tiny',
+        'unsigned'    => TRUE,
       ),
     ),
     'primary key'  => array('isbn_id', 'flap_id'),
@@ -412,6 +436,12 @@ function nnels_content_cafe_schema() {
         'columns' => array(
           'jacket_id' => 'jacket_id',
         ),
+      ),
+      'selected'      => array(
+        'description' => 'The selected flag, determines which record to use.',
+        'type'        => 'int',
+        'size'        => 'tiny',
+        'unsigned'    => TRUE,
       ),
     ),
   );
