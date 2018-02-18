@@ -217,12 +217,6 @@ function nnels_content_cafe_schema() {
           'biography_id' => 'biography_id',
         ),
       ),
-      'selected'      => array(
-        'description' => 'The selected flag, determines which record to use.',
-        'type'        => 'int',
-        'size'        => 'tiny',
-        'unsigned'    => TRUE,
-      ),
     ),
   );
 
@@ -290,12 +284,6 @@ function nnels_content_cafe_schema() {
         'columns' => array(
           'excerpt_id' => 'excerpt_id',
         ),
-      ),
-      'selected'      => array(
-        'description' => 'The selected flag, determines which record to use.',
-        'type'        => 'int',
-        'size'        => 'tiny',
-        'unsigned'    => TRUE,
       ),
     ),
   );
@@ -454,12 +442,6 @@ function nnels_content_cafe_schema() {
         'columns' => array(
           'jacket_id' => 'jacket_id',
         ),
-      ),
-      'selected'      => array(
-        'description' => 'The selected flag, determines which record to use.',
-        'type'        => 'int',
-        'size'        => 'tiny',
-        'unsigned'    => TRUE,
       ),
     ),
   );
