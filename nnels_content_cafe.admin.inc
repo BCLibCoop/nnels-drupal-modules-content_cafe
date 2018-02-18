@@ -501,7 +501,7 @@ function nnels_content_cafe_overview_flap_form($nid, $isbns, $flaps, $suppliers)
     $form['#options'][$flap_id] = array(
       'isbn'     => $isbns[$flap->isbn_id],
       'supplier' => $suppliers[$flap->supplier_id]->supplier_name,
-      'edit'     => l('Edit/View', 'node/' . $nid . '/content_cafe/biography/' . $flap->external_id . '/edit'),
+      'edit'     => l('Edit/View', 'node/' . $nid . '/content_cafe/flap/' . $flap->external_id . '/edit'),
     );
   }
 
@@ -533,7 +533,7 @@ function nnels_content_cafe_overview_jacket_form($nid, $isbns, $jackets) {
     $form['#options'][$jacket_id] = array(
       'isbn'     => $isbns[$jacket->isbn_id],
       'supplier' => $suppliers[$jacket->supplier_id]->supplier_name,
-      'edit'     => l('Edit/View', 'node/' . $nid . '/content_cafe/biography/' . $jacket->external_id . '/edit'),
+      'edit'     => l('Edit/View', 'node/' . $nid . '/content_cafe/jacket/' . $jacket->external_id . '/edit'),
     );
   }
 
@@ -565,7 +565,7 @@ function nnels_content_cafe_overview_toc_form($nid, $isbns, $tocs) {
     $form['#options'][$toc_id] = array(
       'isbn'     => $isbns[$toc->isbn_id],
       'supplier' => $suppliers[$toc->supplier_id]->supplier_name,
-      'edit'     => l('Edit/View', 'node/' . $nid . '/content_cafe/biography/' . $toc->external_id . '/edit'),
+      'edit'     => l('Edit/View', 'node/' . $nid . '/content_cafe/toc/' . $toc->external_id . '/edit'),
     );
   }
 
@@ -751,12 +751,52 @@ function nnels_content_cafe_excerpt_edit_form_submit($form, &$form_state) {
  * @param array $form
  * @param array $form_state
  * @param int $nid
- * @param int $flap_id
+ * @param int $external_id
  *
  * @return array
  */
-function nnels_content_cafe_flap_edit_form($form, &$form_state, $nid, $flap_id) {
-  return array();
+function nnels_content_cafe_flap_edit_form($form, &$form_state, $nid, $external_id) {
+  $node = node_load($nid);
+  $flap = nnels_content_cafe_select_content_cafe_flap_row($external_id);
+  drupal_set_title(t('Edit flap %id for %node.', array('%id' => $external_id, '%node' => $node->title)), PASS_THROUGH);
+
+  $form = array();
+
+  $form['flap'] = array(
+    '#type'          => 'text_format',
+    '#title'         => t('Flap'),
+    '#default_value' => $flap->flap,
+    '#required'      => TRUE,
+  );
+
+  $form['actions'] = array(
+    '#type'          => 'actions',
+  );
+  $form['actions']['submit'] = array(
+    '#type'          => 'submit',
+    '#value'         => t('Save changes'),
+    '#suffix'        => l(t('Cancel'), 'node/' . $nid . '/content_cafe'),
+  );
+
+  return $form;
+}
+
+/**
+ * Flap Edit Form Submit.
+ *
+ * @param array $form
+ * @param array $form_state
+ *
+ * @return void
+ */
+function nnels_content_cafe_flap_edit_form_submit($form, &$form_state) {
+  $nid         = $form_state['build_info']['args'][0];
+  $external_id = $form_state['build_info']['args'][1];
+  $flap        = $form_state['values']['flap']['value'];
+  nnels_content_cafe_update_content_cafe_flap_row($external_id, $flap);
+
+  drupal_set_message(t('Flap has been updated.'));
+  $form_state['redirect'] = 'node/' . $nid . '/content_cafe';
 }
 
 /**
