@@ -713,3 +713,22 @@ function nnels_content_cafe_update_content_cafe_annotation_row($external_id, $an
     ->condition('external_id', $external_id)
     ->execute();
 }
+
+/**
+ * Update a row in the content_cafe_biography table.
+ *
+ * @param int $external_id
+ * @param string $biography
+ *
+ * @return void
+ */
+function nnels_content_cafe_update_content_cafe_biography_row($external_id, $biography) {
+  db_update('content_cafe_biography')
+    ->fields(
+      array(
+        'biography' => $biography,
+      )
+    )
+    ->condition('external_id', $external_id)
+    ->execute();
+}

@@ -643,12 +643,52 @@ function nnels_content_cafe_annotation_edit_form_submit($form, &$form_state) {
  * @param array $form
  * @param array $form_state
  * @param int $nid
- * @param int $biography_id
+ * @param int $external_id
  *
  * @return array
  */
-function nnels_content_cafe_biography_edit_form($form, &$form_state, $nid, $biography_id) {
-  return array();
+function nnels_content_cafe_biography_edit_form($form, &$form_state, $nid, $external_id) {
+  $node      = node_load($nid);
+  $biography = nnels_content_cafe_select_content_cafe_biography_row($external_id);
+  drupal_set_title(t('Edit biography %id for %node.', array('%id' => $external_id, '%node' => $node->title)), PASS_THROUGH);
+
+  $form = array();
+
+  $form['biography'] = array(
+    '#type'          => 'text_format',
+    '#title'         => t('Biography'),
+    '#default_value' => $biography->biography,
+    '#required'      => TRUE,
+  );
+
+  $form['actions'] = array(
+    '#type'          => 'actions',
+  );
+  $form['actions']['submit'] = array(
+    '#type'          => 'submit',
+    '#value'         => t('Save changes'),
+    '#suffix'        => l(t('Cancel'), 'node/' . $nid . '/content_cafe'),
+  );
+
+  return $form;
+}
+
+/**
+ * Biography Edit Form Submit.
+ *
+ * @param array $form
+ * @param array $form_state
+ *
+ * @return void
+ */
+function nnels_content_cafe_biography_edit_form_submit($form, &$form_state) {
+  $nid         = $form_state['build_info']['args'][0];
+  $external_id = $form_state['build_info']['args'][1];
+  $biography   = $form_state['values']['biography']['value'];
+  nnels_content_cafe_update_content_cafe_biography_row($external_id, $biography);
+
+  drupal_set_message(t('Biography has been updated.'));
+  $form_state['redirect'] = 'node/' . $nid . '/content_cafe';
 }
 
 /**
