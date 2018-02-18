@@ -732,3 +732,22 @@ function nnels_content_cafe_update_content_cafe_biography_row($external_id, $bio
     ->condition('external_id', $external_id)
     ->execute();
 }
+
+/**
+ * Update a row in the content_cafe_excerpt table.
+ *
+ * @param int $external_id
+ * @param string $excerpt
+ *
+ * @return void
+ */
+function nnels_content_cafe_update_content_cafe_excerpt_row($external_id, $excerpt) {
+  db_update('content_cafe_excerpt')
+    ->fields(
+      array(
+        'excerpt' => $excerpt,
+      )
+    )
+    ->condition('external_id', $external_id)
+    ->execute();
+}
