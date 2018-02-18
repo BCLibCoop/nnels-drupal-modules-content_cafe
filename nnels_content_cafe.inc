@@ -661,6 +661,45 @@ function nnels_content_cafe_select_multiple_content_cafe_flap_rows($isbns, &$sup
 }
 
 /**
+ * Select rows from the content_cafe_jacket table.
+ *
+ * @param array $isbns
+ *
+ * @return mixed
+ */
+function nnels_content_cafe_select_multiple_content_cafe_jacket_rows($isbns) {
+  $records = FALSE;
+
+  if (count($isbns)) {
+    $query = db_select('content_cafe_isbn_jacket', 'i');
+    $query->join('content_cafe_jacket', 'c', 'c.jacket_id = i.jacket_id');
+    $query->fields('i');
+    $query->fields('c');
+    $query->condition('i.isbn_id', $isbns, 'IN');
+    $result = $query->execute();
+    
+    if ($result->rowCount()) {
+      $records  = array();
+      $selected = FALSE;
+      while ($record = $result->fetchObject()) {
+        $records[$record->jacket_id] = $record;
+        if ($record->selected) {
+          $selected = TRUE;
+        }
+      }
+
+      // Set the default selected value.
+      if (!$selected) {
+        reset($records);
+        $records[key($records)]->selected = TRUE;
+      }
+    }
+  }
+
+  return $records;
+}
+
+/**
  * Select a row from the content_cafe_toc table.
  *
  * @param int $external_id

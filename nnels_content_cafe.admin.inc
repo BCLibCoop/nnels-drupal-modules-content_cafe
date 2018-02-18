@@ -299,7 +299,7 @@ function nnels_content_cafe_overview_form($form, &$form_state, $nid) {
   $biographies  = nnels_content_cafe_select_multiple_content_cafe_biography_rows($isbn_ids, $supplier_ids);
   $excerpts     = nnels_content_cafe_select_multiple_content_cafe_excerpt_rows($isbn_ids);
   $flaps        = nnels_content_cafe_select_multiple_content_cafe_flap_rows($isbn_ids, $supplier_ids);
-  // $jackets     = nnels_content_cafe_select_multiple_content_cafe_jacket_rows($isbn_ids, $supplier_ids);
+  $jackets      = nnels_content_cafe_select_multiple_content_cafe_jacket_rows($isbn_ids);
   $tocs         = nnels_content_cafe_select_multiple_content_cafe_toc_rows($isbn_ids);
   $suppliers    = nnels_content_cafe_select_multiple_content_cafe_supplier_rows(array_keys($supplier_ids));
 
@@ -509,15 +509,17 @@ function nnels_content_cafe_overview_annotation_form($nid, $isbns, $annotations,
   );
 
   $selected = NULL;
-  foreach ($annotations as $annotation_id => $annotation) {
-    $form['#options'][$annotation_id] = array(
-      'isbn'     => $isbns[$annotation->isbn_id],
-      'supplier' => $suppliers[$annotation->supplier_id]->supplier_name,
-      'edit'     => l('Edit/View', 'node/' . $nid . '/content_cafe/annotation/' . $annotation->external_id . '/edit'),
-    );
+  if ($annotations) {
+    foreach ($annotations as $annotation_id => $annotation) {
+      $form['#options'][$annotation_id] = array(
+        'isbn'     => $isbns[$annotation->isbn_id],
+        'supplier' => $suppliers[$annotation->supplier_id]->supplier_name,
+        'edit'     => l('Edit/View', 'node/' . $nid . '/content_cafe/annotation/' . $annotation->external_id . '/edit'),
+      );
 
-    if ($annotation->selected) {
-      $selected = $annotation_id;
+      if ($annotation->selected) {
+        $selected = $annotation_id;
+      }
     }
   }
 
@@ -550,15 +552,17 @@ function nnels_content_cafe_overview_biography_form($nid, $isbns, $biographies, 
   );
 
   $selected = NULL;
-  foreach ($biographies as $biography_id => $biography) {
-    $form['#options'][$biography_id] = array(
-      'isbn'     => $isbns[$biography->isbn_id],
-      'supplier' => $suppliers[$biography->supplier_id]->supplier_name,
-      'edit'     => l('Edit/View', 'node/' . $nid . '/content_cafe/biography/' . $biography->external_id . '/edit'),
-    );
+  if ($biographies) {
+    foreach ($biographies as $biography_id => $biography) {
+      $form['#options'][$biography_id] = array(
+        'isbn'     => $isbns[$biography->isbn_id],
+        'supplier' => $suppliers[$biography->supplier_id]->supplier_name,
+        'edit'     => l('Edit/View', 'node/' . $nid . '/content_cafe/biography/' . $biography->external_id . '/edit'),
+      );
 
-    if ($biography->selected) {
-      $selected = $biography_id;
+      if ($biography->selected) {
+        $selected = $biography_id;
+      }
     }
   }
 
@@ -589,14 +593,16 @@ function nnels_content_cafe_overview_excerpt_form($nid, $isbns, $excerpts) {
   );
 
   $selected = NULL;
-  foreach ($excerpts as $excerpt_id => $excerpt) {
-    $form['#options'][$excerpt_id] = array(
-      'isbn'     => $isbns[$excerpt->isbn_id],
-      'edit'     => l('Edit/View', 'node/' . $nid . '/content_cafe/excerpt/' . $excerpt->external_id . '/edit'),
-    );
+  if ($excerpts) {
+    foreach ($excerpts as $excerpt_id => $excerpt) {
+      $form['#options'][$excerpt_id] = array(
+        'isbn'     => $isbns[$excerpt->isbn_id],
+        'edit'     => l('Edit/View', 'node/' . $nid . '/content_cafe/excerpt/' . $excerpt->external_id . '/edit'),
+      );
 
-    if ($excerpt->selected) {
-      $selected = $excerpt_id;
+      if ($excerpt->selected) {
+        $selected = $excerpt_id;
+      }
     }
   }
 
@@ -629,15 +635,17 @@ function nnels_content_cafe_overview_flap_form($nid, $isbns, $flaps, $suppliers)
   );
 
   $selected = NULL;
-  foreach ($flaps as $flap_id => $flap) {
-    $form['#options'][$flap_id] = array(
-      'isbn'     => $isbns[$flap->isbn_id],
-      'supplier' => $suppliers[$flap->supplier_id]->supplier_name,
-      'edit'     => l('Edit/View', 'node/' . $nid . '/content_cafe/flap/' . $flap->external_id . '/edit'),
-    );
+  if ($flaps) {
+    foreach ($flaps as $flap_id => $flap) {
+      $form['#options'][$flap_id] = array(
+        'isbn'     => $isbns[$flap->isbn_id],
+        'supplier' => $suppliers[$flap->supplier_id]->supplier_name,
+        'edit'     => l('Edit/View', 'node/' . $nid . '/content_cafe/flap/' . $flap->external_id . '/edit'),
+      );
 
-    if ($flap->selected) {
-      $selected = $flap_id;
+      if ($flap->selected) {
+        $selected = $flap_id;
+      }
     }
   }
 
@@ -668,15 +676,17 @@ function nnels_content_cafe_overview_jacket_form($nid, $isbns, $jackets) {
   );
 
   $selected = NULL;
-  foreach ($jackets as $jacket_id => $jacket) {
-    $form['#options'][$jacket_id] = array(
-      'isbn'     => $isbns[$jacket->isbn_id],
-      'supplier' => $suppliers[$jacket->supplier_id]->supplier_name,
-      'edit'     => l('Edit/View', 'node/' . $nid . '/content_cafe/jacket/' . $jacket->external_id . '/edit'),
-    );
+  if ($jackets) {
+    foreach ($jackets as $jacket_id => $jacket) {
+      $form['#options'][$jacket_id] = array(
+        'isbn'     => $isbns[$jacket->isbn_id],
+        'supplier' => $suppliers[$jacket->supplier_id]->supplier_name,
+        'edit'     => l('Edit/View', 'node/' . $nid . '/content_cafe/jacket/' . $jacket->external_id . '/edit'),
+      );
 
-    if ($jacket->selected) {
-      $selected = $jacket_id;
+      if ($jacket->selected) {
+        $selected = $jacket_id;
+      }
     }
   }
 
@@ -707,15 +717,16 @@ function nnels_content_cafe_overview_toc_form($nid, $isbns, $tocs) {
   );
 
   $selected = NULL;
-  foreach ($tocs as $toc_id => $toc) {
-    $form['#options'][$toc_id] = array(
-      'isbn'     => $isbns[$toc->isbn_id],
-      'supplier' => $suppliers[$toc->supplier_id]->supplier_name,
-      'edit'     => l('Edit/View', 'node/' . $nid . '/content_cafe/toc/' . $toc->external_id . '/edit'),
-    );
+  if ($tocs) {
+    foreach ($tocs as $toc_id => $toc) {
+      $form['#options'][$toc_id] = array(
+        'isbn'     => $isbns[$toc->isbn_id],
+        'edit'     => l('Edit/View', 'node/' . $nid . '/content_cafe/toc/' . $toc->external_id . '/edit'),
+      );
 
-    if ($toc->selected) {
-      $selected = $toc_id;
+      if ($toc->selected) {
+        $selected = $toc_id;
+      }
     }
   }
 
