@@ -452,10 +452,20 @@ function nnels_content_cafe_select_multiple_content_cafe_annotation_rows($isbns,
     $result = $query->execute();
     
     if ($result->rowCount()) {
-      $records = array();
+      $records  = array();
+      $selected = FALSE;
       while ($record = $result->fetchObject()) {
         $records[$record->annotation_id]    = $record;
         $supplier_ids[$record->supplier_id] = TRUE;
+        if ($record->selected) {
+          $selected = TRUE;
+        }
+      }
+
+      // Set the default selected value.
+      if (!$selected) {
+        reset($records);
+        $records[key($records)]->selected = TRUE;
       }
     }
   }
@@ -505,10 +515,20 @@ function nnels_content_cafe_select_multiple_content_cafe_biography_rows($isbns, 
     $result = $query->execute();
     
     if ($result->rowCount()) {
-      $records = array();
+      $records  = array();
+      $selected = FALSE;
       while ($record = $result->fetchObject()) {
         $records[$record->biography_id]    = $record;
         $supplier_ids[$record->supplier_id] = TRUE;
+        if ($record->selected) {
+          $selected = TRUE;
+        }
+      }
+
+      // Set the default selected value.
+      if (!$selected) {
+        reset($records);
+        $records[key($records)]->selected = TRUE;
       }
     }
   }

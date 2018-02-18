@@ -295,14 +295,14 @@ function nnels_content_cafe_overview_form($form, &$form_state, $nid) {
   $isbns        = nnels_content_cafe_select_multiple_content_cafe_isbn_rows(array_keys($valid_isbns));
   $isbn_ids     = array_keys($isbns);
   $supplier_ids = array();
-  $annotations = nnels_content_cafe_select_multiple_content_cafe_annotation_rows($isbn_ids, $supplier_ids);
-  $biographies = nnels_content_cafe_select_multiple_content_cafe_biography_rows($isbn_ids, $supplier_ids);
-  $excerpts    = nnels_content_cafe_select_multiple_content_cafe_excerpt_rows($isbn_ids);
-  $flaps       = nnels_content_cafe_select_multiple_content_cafe_flap_rows($isbn_ids, $supplier_ids);
+  $annotations  = nnels_content_cafe_select_multiple_content_cafe_annotation_rows($isbn_ids, $supplier_ids);
+  $biographies  = nnels_content_cafe_select_multiple_content_cafe_biography_rows($isbn_ids, $supplier_ids);
+  $excerpts     = nnels_content_cafe_select_multiple_content_cafe_excerpt_rows($isbn_ids);
+  $flaps        = nnels_content_cafe_select_multiple_content_cafe_flap_rows($isbn_ids, $supplier_ids);
   // $jackets     = nnels_content_cafe_select_multiple_content_cafe_jacket_rows($isbn_ids, $supplier_ids);
-  $tocs        = nnels_content_cafe_select_multiple_content_cafe_toc_rows($isbn_ids);
-  $suppliers   = nnels_content_cafe_select_multiple_content_cafe_supplier_rows(array_keys($supplier_ids));
-
+  $tocs         = nnels_content_cafe_select_multiple_content_cafe_toc_rows($isbn_ids);
+  $suppliers    = nnels_content_cafe_select_multiple_content_cafe_supplier_rows(array_keys($supplier_ids));
+print_r($biographies);exit;
   $form = array();
 
   $form['tabs'] = array(
@@ -398,13 +398,20 @@ function nnels_content_cafe_overview_annotation_form($nid, $isbns, $annotations,
     '#empty'    => t('There are no annotations for this repository item.'),
   );
 
+  $selected = NULL;
   foreach ($annotations as $annotation_id => $annotation) {
     $form['#options'][$annotation_id] = array(
       'isbn'     => $isbns[$annotation->isbn_id],
       'supplier' => $suppliers[$annotation->supplier_id]->supplier_name,
       'edit'     => l('Edit/View', 'node/' . $nid . '/content_cafe/annotation/' . $annotation->external_id . '/edit'),
     );
+
+    if ($annotation->selected) {
+      $selected = $annotation_id;
+    }
   }
+
+  $form['#default_value'] = $selected;
 
   return $form;
 }
@@ -432,12 +439,17 @@ function nnels_content_cafe_overview_biography_form($nid, $isbns, $biographies, 
     '#empty'    => t('There are no biographies for this repository item.'),
   );
 
+  $selected = NULL;
   foreach ($biographies as $biography_id => $biography) {
     $form['#options'][$biography_id] = array(
       'isbn'     => $isbns[$biography->isbn_id],
       'supplier' => $suppliers[$biography->supplier_id]->supplier_name,
       'edit'     => l('Edit/View', 'node/' . $nid . '/content_cafe/biography/' . $biography->external_id . '/edit'),
     );
+
+    if ($annotation->selected) {
+      $selected = $annotation_id;
+    }
   }
 
   return $form;
@@ -464,11 +476,16 @@ function nnels_content_cafe_overview_excerpt_form($nid, $isbns, $excerpts) {
     '#empty'    => t('There are no excerpts for this repository item.'),
   );
 
+  $selected = NULL;
   foreach ($excerpts as $excerpt_id => $excerpt) {
     $form['#options'][$excerpt_id] = array(
       'isbn'     => $isbns[$excerpt->isbn_id],
       'edit'     => l('Edit/View', 'node/' . $nid . '/content_cafe/excerpt/' . $excerpt->external_id . '/edit'),
     );
+
+    if ($annotation->selected) {
+      $selected = $annotation_id;
+    }
   }
 
   return $form;
@@ -497,12 +514,17 @@ function nnels_content_cafe_overview_flap_form($nid, $isbns, $flaps, $suppliers)
     '#empty'    => t('There are no flaps for this repository item.'),
   );
 
+  $selected = NULL;
   foreach ($flaps as $flap_id => $flap) {
     $form['#options'][$flap_id] = array(
       'isbn'     => $isbns[$flap->isbn_id],
       'supplier' => $suppliers[$flap->supplier_id]->supplier_name,
       'edit'     => l('Edit/View', 'node/' . $nid . '/content_cafe/flap/' . $flap->external_id . '/edit'),
     );
+
+    if ($annotation->selected) {
+      $selected = $annotation_id;
+    }
   }
 
   return $form;
@@ -529,12 +551,17 @@ function nnels_content_cafe_overview_jacket_form($nid, $isbns, $jackets) {
     '#empty'    => t('There are no jackets for this repository item.'),
   );
 
+  $selected = NULL;
   foreach ($jackets as $jacket_id => $jacket) {
     $form['#options'][$jacket_id] = array(
       'isbn'     => $isbns[$jacket->isbn_id],
       'supplier' => $suppliers[$jacket->supplier_id]->supplier_name,
       'edit'     => l('Edit/View', 'node/' . $nid . '/content_cafe/jacket/' . $jacket->external_id . '/edit'),
     );
+
+    if ($annotation->selected) {
+      $selected = $annotation_id;
+    }
   }
 
   return $form;
@@ -561,12 +588,17 @@ function nnels_content_cafe_overview_toc_form($nid, $isbns, $tocs) {
     '#empty'    => t('There are no tocs for this repository item.'),
   );
 
+  $selected = NULL;
   foreach ($tocs as $toc_id => $toc) {
     $form['#options'][$toc_id] = array(
       'isbn'     => $isbns[$toc->isbn_id],
       'supplier' => $suppliers[$toc->supplier_id]->supplier_name,
       'edit'     => l('Edit/View', 'node/' . $nid . '/content_cafe/toc/' . $toc->external_id . '/edit'),
     );
+
+    if ($annotation->selected) {
+      $selected = $annotation_id;
+    }
   }
 
   return $form;

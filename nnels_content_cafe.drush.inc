@@ -28,7 +28,7 @@ function nnels_content_cafe_drush_command() {
  * drush_[COMMAND_NAME]().
  */
 function drush_nnels_content_cafe_update_content_cafe() {
-  // delete_all_data();
+  delete_all_data();
   nnels_content_cafe_update_content_cafe(TRUE);
 }
 
@@ -37,7 +37,7 @@ function drush_nnels_content_cafe_update_content_cafe() {
  * drush_[COMMAND_NAME]().
  */
 function drush_nnels_content_cafe_update_content_cafe_all() {
-  // delete_all_data();
+  delete_all_data();
   nnels_content_cafe_update_content_cafe();
 }
 
@@ -93,7 +93,7 @@ function nnels_content_cafe_update_content_cafe($limit = FALSE) {
       // of the dirty data which will polute the query results over time. This
       // method guarantees 50 API calls per run.
       if ($limit && $calls >= 50) {
-        break;
+        break 2;
       }
     }
   }
