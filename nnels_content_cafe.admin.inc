@@ -819,10 +819,50 @@ function nnels_content_cafe_jacket_edit_form($form, &$form_state, $nid, $jacket_
  * @param array $form
  * @param array $form_state
  * @param int $nid
- * @param int $toc_id
+ * @param int $external_id
  *
  * @return array
  */
-function nnels_content_cafe_toc_edit_form($form, &$form_state, $nid, $toc_id) {
-  return array();
+function nnels_content_cafe_toc_edit_form($form, &$form_state, $nid, $external_id) {
+  $node = node_load($nid);
+  $toc  = nnels_content_cafe_select_content_cafe_toc_row($external_id);
+  drupal_set_title(t('Edit toc %id for %node.', array('%id' => $external_id, '%node' => $node->title)), PASS_THROUGH);
+
+  $form = array();
+
+  $form['toc'] = array(
+    '#type'          => 'text_format',
+    '#title'         => t('TOC'),
+    '#default_value' => $toc->toc,
+    '#required'      => TRUE,
+  );
+
+  $form['actions'] = array(
+    '#type'          => 'actions',
+  );
+  $form['actions']['submit'] = array(
+    '#type'          => 'submit',
+    '#value'         => t('Save changes'),
+    '#suffix'        => l(t('Cancel'), 'node/' . $nid . '/content_cafe'),
+  );
+
+  return $form;
+}
+
+/**
+ * TOC Edit Form Submit.
+ *
+ * @param array $form
+ * @param array $form_state
+ *
+ * @return void
+ */
+function nnels_content_cafe_toc_edit_form_submit($form, &$form_state) {
+  $nid         = $form_state['build_info']['args'][0];
+  $external_id = $form_state['build_info']['args'][1];
+  $toc         = $form_state['values']['toc']['value'];
+  nnels_content_cafe_update_content_cafe_toc_row($external_id, $toc);
+
+  drupal_set_message(t('TOC has been updated.'));
+  $form_state['redirect'] = 'node/' . $nid . '/content_cafe';
 }

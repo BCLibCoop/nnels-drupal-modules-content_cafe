@@ -770,3 +770,22 @@ function nnels_content_cafe_update_content_cafe_flap_row($external_id, $flap) {
     ->condition('external_id', $external_id)
     ->execute();
 }
+
+/**
+ * Update a row in the content_cafe_toc table.
+ *
+ * @param int $external_id
+ * @param string $toc
+ *
+ * @return void
+ */
+function nnels_content_cafe_update_content_cafe_toc_row($external_id, $toc) {
+  db_update('content_cafe_toc')
+    ->fields(
+      array(
+        'toc' => $toc,
+      )
+    )
+    ->condition('external_id', $external_id)
+    ->execute();
+}
