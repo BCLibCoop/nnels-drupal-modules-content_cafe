@@ -302,7 +302,7 @@ function nnels_content_cafe_overview_form($form, &$form_state, $nid) {
   // $jackets     = nnels_content_cafe_select_multiple_content_cafe_jacket_rows($isbn_ids, $supplier_ids);
   $tocs         = nnels_content_cafe_select_multiple_content_cafe_toc_rows($isbn_ids);
   $suppliers    = nnels_content_cafe_select_multiple_content_cafe_supplier_rows(array_keys($supplier_ids));
-print_r($biographies);exit;
+
   $form = array();
 
   $form['tabs'] = array(
@@ -447,10 +447,12 @@ function nnels_content_cafe_overview_biography_form($nid, $isbns, $biographies, 
       'edit'     => l('Edit/View', 'node/' . $nid . '/content_cafe/biography/' . $biography->external_id . '/edit'),
     );
 
-    if ($annotation->selected) {
-      $selected = $annotation_id;
+    if ($biography->selected) {
+      $selected = $biography_id;
     }
   }
+
+  $form['#default_value'] = $selected;
 
   return $form;
 }
@@ -483,10 +485,12 @@ function nnels_content_cafe_overview_excerpt_form($nid, $isbns, $excerpts) {
       'edit'     => l('Edit/View', 'node/' . $nid . '/content_cafe/excerpt/' . $excerpt->external_id . '/edit'),
     );
 
-    if ($annotation->selected) {
-      $selected = $annotation_id;
+    if ($excerpt->selected) {
+      $selected = $excerpt_id;
     }
   }
+
+  $form['#default_value'] = $selected;
 
   return $form;
 }
@@ -522,10 +526,12 @@ function nnels_content_cafe_overview_flap_form($nid, $isbns, $flaps, $suppliers)
       'edit'     => l('Edit/View', 'node/' . $nid . '/content_cafe/flap/' . $flap->external_id . '/edit'),
     );
 
-    if ($annotation->selected) {
-      $selected = $annotation_id;
+    if ($flap->selected) {
+      $selected = $flap_id;
     }
   }
+
+  $form['#default_value'] = $selected;
 
   return $form;
 }
@@ -559,10 +565,12 @@ function nnels_content_cafe_overview_jacket_form($nid, $isbns, $jackets) {
       'edit'     => l('Edit/View', 'node/' . $nid . '/content_cafe/jacket/' . $jacket->external_id . '/edit'),
     );
 
-    if ($annotation->selected) {
-      $selected = $annotation_id;
+    if ($jacket->selected) {
+      $selected = $jacket_id;
     }
   }
+
+  $form['#default_value'] = $selected;
 
   return $form;
 }
@@ -596,10 +604,12 @@ function nnels_content_cafe_overview_toc_form($nid, $isbns, $tocs) {
       'edit'     => l('Edit/View', 'node/' . $nid . '/content_cafe/toc/' . $toc->external_id . '/edit'),
     );
 
-    if ($annotation->selected) {
-      $selected = $annotation_id;
+    if ($toc->selected) {
+      $selected = $toc_id;
     }
   }
+
+  $form['#default_value'] = $selected;
 
   return $form;
 }
