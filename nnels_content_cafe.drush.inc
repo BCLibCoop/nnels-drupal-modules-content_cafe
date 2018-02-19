@@ -4,6 +4,7 @@
  * @todo if an ISBN value changes on a node, need to disassociate the node with the ISBN.
  * @todo save the jacket image - add jacket edit form.
  * @todo hook_views_data
+ * @todo view to list all repo items with content cafe data.
  */
 
 /**
