@@ -523,6 +523,44 @@ function nnels_content_cafe_select_multiple_content_cafe_annotation_rows_by_nids
 }
 
 /**
+ * Select all rows from the content_cafe_annotation table.
+ *
+ * @param bool $quick
+ *
+ * @return mixed
+ */
+function nnels_content_cafe_select_all_content_cafe_annotation_rows($quick = FALSE) {
+  $records = FALSE;
+
+  $query = db_select('node_content_cafe', 'n');
+  $query->join('content_cafe_isbn_annotation', 'i', 'i.isbn_id = n.isbn_id');
+  $query->join('content_cafe_annotation', 'd', 'd.annotation_id = i.annotation_id');
+  $query->fields('n', array('nid'));
+  if ($quick) {
+    $query->fields('i', array('annotation_id'));
+  }
+  else {
+    $query->fields('i', array('annotation_id', 'selected'));
+    $query->fields('d');
+  }
+  $result = $query->execute();
+
+  if ($result->rowCount()) {
+    $records = array();
+    while ($record = $result->fetchObject()) {
+      if ($quick) {
+        $records[$record->nid] = TRUE;
+      }
+      else {
+        $records[$record->nid][$record->annotation_id] = $record;
+      }
+    }
+  }
+
+  return $records;
+}
+
+/**
  * Select a row from the content_cafe_biography table.
  *
  * @param int $external_id
@@ -635,6 +673,44 @@ function nnels_content_cafe_select_multiple_content_cafe_biography_rows_by_nids(
 }
 
 /**
+ * Select all rows from the content_cafe_biography table.
+ *
+ * @param bool $quick
+ *
+ * @return mixed
+ */
+function nnels_content_cafe_select_all_content_cafe_biography_rows($quick = FALSE) {
+  $records = FALSE;
+
+  $query = db_select('node_content_cafe', 'n');
+  $query->join('content_cafe_isbn_biography', 'i', 'i.isbn_id = n.isbn_id');
+  $query->join('content_cafe_biography', 'd', 'd.biography_id = i.biography_id');
+  $query->fields('n', array('nid'));
+  if ($quick) {
+    $query->fields('i', array('biography_id'));
+  }
+  else {
+    $query->fields('i', array('biography_id', 'selected'));
+    $query->fields('d');
+  }
+  $result = $query->execute();
+
+  if ($result->rowCount()) {
+    $records = array();
+    while ($record = $result->fetchObject()) {
+      if ($quick) {
+        $records[$record->nid] = TRUE;
+      }
+      else {
+        $records[$record->nid][$record->biography_id] = $record;
+      }
+    }
+  }
+
+  return $records;
+}
+
+/**
  * Select a row from the content_cafe_excerpt table.
  *
  * @param int $external_id
@@ -737,6 +813,44 @@ function nnels_content_cafe_select_multiple_content_cafe_excerpt_rows_by_nids($n
           reset($nid_records);
           $nid_records[key($nid_records)]->selected = TRUE;
         }
+      }
+    }
+  }
+
+  return $records;
+}
+
+/**
+ * Select all rows from the content_cafe_excerpt table.
+ *
+ * @param bool $quick
+ *
+ * @return mixed
+ */
+function nnels_content_cafe_select_all_content_cafe_excerpt_rows($quick = FALSE) {
+  $records = FALSE;
+
+  $query = db_select('node_content_cafe', 'n');
+  $query->join('content_cafe_isbn_excerpt', 'i', 'i.isbn_id = n.isbn_id');
+  $query->join('content_cafe_excerpt', 'd', 'd.excerpt_id = i.excerpt_id');
+  $query->fields('n', array('nid'));
+  if ($quick) {
+    $query->fields('i', array('excerpt_id'));
+  }
+  else {
+    $query->fields('i', array('excerpt_id', 'selected'));
+    $query->fields('d');
+  }
+  $result = $query->execute();
+
+  if ($result->rowCount()) {
+    $records = array();
+    while ($record = $result->fetchObject()) {
+      if ($quick) {
+        $records[$record->nid] = TRUE;
+      }
+      else {
+        $records[$record->nid][$record->excerpt_id] = $record;
       }
     }
   }
@@ -857,6 +971,44 @@ function nnels_content_cafe_select_multiple_content_cafe_flap_rows_by_nids($nids
 }
 
 /**
+ * Select all rows from the content_cafe_flap table.
+ *
+ * @param bool $quick
+ *
+ * @return mixed
+ */
+function nnels_content_cafe_select_all_content_cafe_flap_rows($quick = FALSE) {
+  $records = FALSE;
+
+  $query = db_select('node_content_cafe', 'n');
+  $query->join('content_cafe_isbn_flap', 'i', 'i.isbn_id = n.isbn_id');
+  $query->join('content_cafe_flap', 'd', 'd.flap_id = i.flap_id');
+  $query->fields('n', array('nid'));
+  if ($quick) {
+    $query->fields('i', array('flap_id'));
+  }
+  else {
+    $query->fields('i', array('flap_id', 'selected'));
+    $query->fields('d');
+  }
+  $result = $query->execute();
+
+  if ($result->rowCount()) {
+    $records = array();
+    while ($record = $result->fetchObject()) {
+      if ($quick) {
+        $records[$record->nid] = TRUE;
+      }
+      else {
+        $records[$record->nid][$record->flap_id] = $record;
+      }
+    }
+  }
+
+  return $records;
+}
+
+/**
  * Select rows from the content_cafe_jacket table.
  *
  * @param array $isbns
@@ -937,6 +1089,44 @@ function nnels_content_cafe_select_multiple_content_cafe_jacket_rows_by_nids($ni
           reset($nid_records);
           $nid_records[key($nid_records)]->selected = TRUE;
         }
+      }
+    }
+  }
+
+  return $records;
+}
+
+/**
+ * Select all rows from the content_cafe_jacket table.
+ *
+ * @param bool $quick
+ *
+ * @return mixed
+ */
+function nnels_content_cafe_select_all_content_cafe_jacket_rows($quick = FALSE) {
+  $records = FALSE;
+
+  $query = db_select('node_content_cafe', 'n');
+  $query->join('content_cafe_isbn_jacket', 'i', 'i.isbn_id = n.isbn_id');
+  $query->join('content_cafe_jacket', 'd', 'd.jacket_id = i.jacket_id');
+  $query->fields('n', array('nid'));
+  if ($quick) {
+    $query->fields('i', array('jacket_id'));
+  }
+  else {
+    $query->fields('i', array('jacket_id', 'selected'));
+    $query->fields('d');
+  }
+  $result = $query->execute();
+
+  if ($result->rowCount()) {
+    $records = array();
+    while ($record = $result->fetchObject()) {
+      if ($quick) {
+        $records[$record->nid] = TRUE;
+      }
+      else {
+        $records[$record->nid][$record->jacket_id] = $record;
       }
     }
   }
@@ -1047,6 +1237,44 @@ function nnels_content_cafe_select_multiple_content_cafe_toc_rows_by_nids($nids)
           reset($nid_records);
           $nid_records[key($nid_records)]->selected = TRUE;
         }
+      }
+    }
+  }
+
+  return $records;
+}
+
+/**
+ * Select all rows from the content_cafe_toc table.
+ *
+ * @param bool $quick
+ *
+ * @return mixed
+ */
+function nnels_content_cafe_select_all_content_cafe_toc_rows($quick = FALSE) {
+  $records = FALSE;
+
+  $query = db_select('node_content_cafe', 'n');
+  $query->join('content_cafe_isbn_toc', 'i', 'i.isbn_id = n.isbn_id');
+  $query->join('content_cafe_toc', 'd', 'd.toc_id = i.toc_id');
+  $query->fields('n', array('nid'));
+  if ($quick) {
+    $query->fields('i', array('toc_id'));
+  }
+  else {
+    $query->fields('i', array('toc_id', 'selected'));
+    $query->fields('d');
+  }
+  $result = $query->execute();
+
+  if ($result->rowCount()) {
+    $records = array();
+    while ($record = $result->fetchObject()) {
+      if ($quick) {
+        $records[$record->nid] = TRUE;
+      }
+      else {
+        $records[$record->nid][$record->toc_id] = $record;
       }
     }
   }

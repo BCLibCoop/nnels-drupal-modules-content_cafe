@@ -493,7 +493,10 @@ function nnels_content_cafe_overview_form_submit($form, &$form_state) {
 function nnels_content_cafe_repository_item_list() {
   drupal_set_title('List of Repository Items with ISBN Numbers.');
 
-  // Get repository_item nodes with ISBN data.
+  // Get all repository_item nodes with ISBN data. This needs to be paged
+  // manually because of the multiple expensive joins that would be required
+  // on the node_content_cafe table. Additional queries below will retrieve
+  // that data and filter as required.
   $query = db_select('node', 'n');
   $query->join('node_content_cafe', 'c', 'c.nid = n.nid');
   $query->leftJoin('field_data_field_isbn', 'i', 'i.entity_id = n.nid');
@@ -506,8 +509,6 @@ function nnels_content_cafe_repository_item_list() {
   $query->condition($or);
   $query->orderBy('n.title');
   $query->groupBy('n.nid');
-  $query = $query->extend('PagerDefault');
-  $query->limit(50);
 
   $result = $query->execute();
 
@@ -517,29 +518,50 @@ function nnels_content_cafe_repository_item_list() {
     $nids[$row->nid] = $row->title;
   }
 
-  // Get the content cafe data.
-  $node_ids    = array_keys($nids);
-  $annotations = nnels_content_cafe_select_multiple_content_cafe_annotation_rows_by_nids($node_ids);
-  $biographies = nnels_content_cafe_select_multiple_content_cafe_biography_rows_by_nids($node_ids);
-  $excerpts    = nnels_content_cafe_select_multiple_content_cafe_excerpt_rows_by_nids($node_ids);
-  $flaps       = nnels_content_cafe_select_multiple_content_cafe_flap_rows_by_nids($node_ids);
-  $jackets     = nnels_content_cafe_select_multiple_content_cafe_jacket_rows_by_nids($node_ids);
-  $tocs        = nnels_content_cafe_select_multiple_content_cafe_toc_rows_by_nids($node_ids);
+  // Get the content cafe data (ids only).
+  $annotations = nnels_content_cafe_select_all_content_cafe_annotation_rows(TRUE);
+  $biographies = nnels_content_cafe_select_all_content_cafe_biography_rows(TRUE);
+  $excerpts    = nnels_content_cafe_select_all_content_cafe_excerpt_rows(TRUE);
+  $flaps       = nnels_content_cafe_select_all_content_cafe_flap_rows(TRUE);
+  $jackets     = nnels_content_cafe_select_all_content_cafe_jacket_rows(TRUE);
+  $tocs        = nnels_content_cafe_select_all_content_cafe_toc_rows(TRUE);
 
-  // Build rows for the table.
-  $rows = array();
+  // Filter results.
+  nnels_content_cafe_repository_item_list_filter_results('annotations', $nids, $annotations);
+  nnels_content_cafe_repository_item_list_filter_results('biographies', $nids, $biographies);
+  nnels_content_cafe_repository_item_list_filter_results('excerpts', $nids, $excerpts);
+  nnels_content_cafe_repository_item_list_filter_results('flaps', $nids, $flaps);
+  nnels_content_cafe_repository_item_list_filter_results('jackets', $nids, $jackets);
+  nnels_content_cafe_repository_item_list_filter_results('tocs', $nids, $tocs);
+
+  // Initialize the pager.
+  $page  = pager_find_page();
+  $limit = 50;
+  $start = $page * $limit;
+  pager_default_initialize(count($nids), $limit);
+
+  // Extract the 50 records (max) for the table.
+  $table_end   = $start + $limit;
+  $array_index = 0;
+  $rows        = array();
   foreach ($nids as $nid => $title) {
-    $row   = array();
-    $row[] = l($title, 'node/' . $nid);
-    $row[] = (isset($annotations[$nid]) ? '*' : '');
-    $row[] = (isset($biographies[$nid]) ? '*' : '');
-    $row[] = (isset($excerpts[$nid])    ? '*' : '');
-    $row[] = (isset($flaps[$nid])       ? '*' : '');
-    $row[] = (isset($jackets[$nid])     ? '*' : '');
-    $row[] = (isset($tocs[$nid])        ? '*' : '');
-    $row[] = l(t('Manage'), 'node/' . $nid . '/content_cafe');
+    if ($array_index >= $table_end) {
+      break;
+    }
+    if ($array_index >= $start) {
+      $row   = array();
+      $row[] = l($title, 'node/' . $nid);
+      $row[] = (isset($annotations[$nid]) ? '*' : '');
+      $row[] = (isset($biographies[$nid]) ? '*' : '');
+      $row[] = (isset($excerpts[$nid])    ? '*' : '');
+      $row[] = (isset($flaps[$nid])       ? '*' : '');
+      $row[] = (isset($jackets[$nid])     ? '*' : '');
+      $row[] = (isset($tocs[$nid])        ? '*' : '');
+      $row[] = l(t('Manage'), 'node/' . $nid . '/content_cafe');
 
-    $rows[] = $row;
+      $rows[] = $row;
+    }
+    $array_index++;
   }
 
   $filter_form = drupal_get_form('nnels_content_cafe_repository_item_list_filter_form');
@@ -565,6 +587,37 @@ function nnels_content_cafe_repository_item_list() {
   $output .= theme('pager');
 
   return $output;
+}
+
+/**
+ * Repository List Filter Form Filter Results.
+ *
+ * @param string $type
+ * @param array $nids
+ * @param array $data
+ *
+ * @return void
+ */
+function nnels_content_cafe_repository_item_list_filter_results($type, &$nids, $data) {
+  if (isset($_SESSION['nnels_content_cafe'][$type])) {
+    if ($_SESSION['nnels_content_cafe'][$type] > 0) {
+      foreach ($nids as $nid => $title) {
+
+        // With.
+        if ($_SESSION['nnels_content_cafe'][$type] == 1) {
+          if (!isset($data[$nid])) {
+            unset($nids[$nid]);
+          }
+        }
+        // Without.
+        else {
+          if (isset($data[$nid])) {
+            unset($nids[$nid]);
+          }
+        }
+      }
+    }
+  }
 }
 
 /**
