@@ -474,6 +474,55 @@ function nnels_content_cafe_select_multiple_content_cafe_annotation_rows($isbns,
 }
 
 /**
+ * Select rows from the content_cafe_annotation table.
+ *
+ * @param array $nids
+ *
+ * @return mixed
+ */
+function nnels_content_cafe_select_multiple_content_cafe_annotation_rows_by_nids($nids) {
+  $records = FALSE;
+
+  if (count($nids)) {
+    $query = db_select('node_content_cafe', 'n');
+    $query->join('content_cafe_isbn_annotation', 'i', 'i.isbn_id = n.isbn_id');
+    $query->join('content_cafe_annotation', 'd', 'd.annotation_id = i.annotation_id');
+    $query->fields('n');
+    $query->fields('i');
+    $query->fields('d');
+    $query->condition('n.nid', $nids, 'IN');
+    $result = $query->execute();
+
+    if ($result->rowCount()) {
+
+      // Gather the records by nid.
+      $records = array();
+      while ($record = $result->fetchObject()) {
+        $records[$record->nid][$record->annotation_id] = $record;
+      }
+
+      // Determine if one of the records has been selected.
+      foreach ($records as $nid => $nid_records) {
+        $selected = FALSE;
+        foreach ($nid_records as $id => $record) {
+          if ($record->selected) {
+            $selected = TRUE;
+          }
+        }
+
+        // No records selected, set the default selected value.
+        if (!$selected) {
+          reset($nid_records);
+          $nid_records[key($nid_records)]->selected = TRUE;
+        }
+      }
+    }
+  }
+
+  return $records;
+}
+
+/**
  * Select a row from the content_cafe_biography table.
  *
  * @param int $external_id
@@ -782,6 +831,30 @@ function nnels_content_cafe_select_node_content_cafe_row($nid, $isbn_id) {
   }
 
   return $record;
+}
+
+/**
+ * Select rows from the node_content_cafe table.
+ *
+ * @param int $nid
+ *
+ * @return mixed
+ */
+function nnels_content_cafe_select_multiple_node_content_cafe_rows($nid) {
+  $result = db_select('node_content_cafe', 's')
+    ->fields('s')
+    ->condition('s.nid', $nid)
+    ->execute();
+
+  $records = FALSE;
+  if ($result->rowCount()) {
+    $records = array();
+    while ($record = $result->fetchObject()) {
+      $records[$record->isbn_id] = $record;
+    }
+  }
+
+  return $records;
 }
 
 /**

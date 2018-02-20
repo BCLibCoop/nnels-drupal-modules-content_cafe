@@ -4,3 +4,5 @@ core = 7.x
 version = 7.x-1.0
 package = NNELS
 configure = admin/configure/nnels/content_cafe
+
+files[] = plugins/nnels_content_cafe_selected_annotation_views_field_handler.inc
