@@ -542,8 +542,9 @@ function nnels_content_cafe_repository_item_list() {
     $rows[] = $row;
   }
 
-  $output  = '';
-  // Add filter form.
+  $filter_form = drupal_get_form('nnels_content_cafe_repository_item_list_filter_form');
+
+  $output  = drupal_render($filter_form);
   $output .= theme(
     'table',
     array(
@@ -564,6 +565,139 @@ function nnels_content_cafe_repository_item_list() {
   $output .= theme('pager');
 
   return $output;
+}
+
+/**
+ * Repository List Filter Form.
+ *
+ * @param array $form
+ * @param array $form_state
+ *
+ * @return array
+ */
+function nnels_content_cafe_repository_item_list_filter_form($form, &$form_state) {
+  $form = array();
+
+  $form['filter'] = array(
+    '#type'          => 'fieldset',
+    '#title'         => t('Filter'),
+    '#collapsible'   => TRUE,
+    '#collapsed'     => !isset($_SESSION['nnels_content_cafe']),
+    '#tree'          => TRUE,
+    '#attributes'    => array(
+      'class' => array('container-inline'),
+    ),
+  );
+
+  $form['filter']['annotations'] = array(
+    '#type'          => 'select',
+    '#title'         => t('With Annotations'),
+    '#options'       => array(
+      '0' => t('- Any -'),
+      '1' => t('Yes'),
+      '2' => t('No'),
+    ),
+    '#default_value' => (isset($_SESSION['nnels_content_cafe']['annotations']) ? $_SESSION['nnels_content_cafe']['annotations'] : 0),
+  );
+
+  $form['filter']['biographies'] = array(
+    '#type'          => 'select',
+    '#title'         => t('With Biographies'),
+    '#options'       => array(
+      '0' => t('- Any -'),
+      '1' => t('Yes'),
+      '2' => t('No'),
+    ),
+    '#default_value' => (isset($_SESSION['nnels_content_cafe']['biographies']) ? $_SESSION['nnels_content_cafe']['biographies'] : 0),
+  );
+
+  $form['filter']['excerpts'] = array(
+    '#type'          => 'select',
+    '#title'         => t('With Excerpts'),
+    '#options'       => array(
+      '0' => t('- Any -'),
+      '1' => t('Yes'),
+      '2' => t('No'),
+    ),
+    '#default_value' => (isset($_SESSION['nnels_content_cafe']['excerpts']) ? $_SESSION['nnels_content_cafe']['excerpts'] : 0),
+  );
+
+  $form['filter']['flaps'] = array(
+    '#type'          => 'select',
+    '#title'         => t('With Flaps'),
+    '#options'       => array(
+      '0' => t('- Any -'),
+      '1' => t('Yes'),
+      '2' => t('No'),
+    ),
+    '#default_value' => (isset($_SESSION['nnels_content_cafe']['flaps']) ? $_SESSION['nnels_content_cafe']['flaps'] : 0),
+  );
+
+  $form['filter']['jackets'] = array(
+    '#type'          => 'select',
+    '#title'         => t('With Jackets'),
+    '#options'       => array(
+      '0' => t('- Any -'),
+      '1' => t('Yes'),
+      '2' => t('No'),
+    ),
+    '#default_value' => (isset($_SESSION['nnels_content_cafe']['jackets']) ? $_SESSION['nnels_content_cafe']['jackets'] : 0),
+  );
+
+  $form['filter']['tocs'] = array(
+    '#type'          => 'select',
+    '#title'         => t('With TOCs'),
+    '#options'       => array(
+      '0' => t('- Any -'),
+      '1' => t('Yes'),
+      '2' => t('No'),
+    ),
+    '#default_value' => (isset($_SESSION['nnels_content_cafe']['tocs']) ? $_SESSION['nnels_content_cafe']['tocs'] : 0),
+  );
+
+  $form['filter']['submit'] = array(
+    '#type'          => 'submit',
+    '#value'         => t('Submit'),
+    '#submit'        => array('nnels_content_cafe_repository_item_list_filter_form_button_submit'),
+  );
+
+  $form['filter']['reset'] = array(
+    '#type'          => 'submit',
+    '#value'         => t('Reset'),
+    '#submit'        => array('nnels_content_cafe_repository_item_list_filter_form_button_reset'),
+    '#access'        => isset($_SESSION['nnels_content_cafe']),
+  );
+
+  return $form;
+}
+
+/**
+ * Repository List Filter Form Submit Button Submit.
+ *
+ * @param array $form
+ * @param array $form_state
+ *
+ * @return void
+ */
+function nnels_content_cafe_repository_item_list_filter_form_button_submit($form, &$form_state) {
+  $_SESSION['nnels_content_cafe']['annotations'] = $form_state['values']['filter']['annotations'];
+  $_SESSION['nnels_content_cafe']['biographies'] = $form_state['values']['filter']['biographies'];
+  $_SESSION['nnels_content_cafe']['excerpts']    = $form_state['values']['filter']['excerpts'];
+  $_SESSION['nnels_content_cafe']['flaps']       = $form_state['values']['filter']['flaps'];
+  $_SESSION['nnels_content_cafe']['jackets']     = $form_state['values']['filter']['jackets'];
+  $_SESSION['nnels_content_cafe']['tocs']        = $form_state['values']['filter']['tocs'];
+}
+
+/**
+ * Repository List Filter Form Reset Button Submit.
+ *
+ * @param array $form
+ * @param array $form_state
+ *
+ * @return void
+ */
+function nnels_content_cafe_repository_item_list_filter_form_button_reset($form, &$form_state) {
+  unset($_SESSION['nnels_content_cafe']);
 }
 
 /**
