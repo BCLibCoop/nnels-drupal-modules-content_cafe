@@ -491,6 +491,7 @@ function nnels_content_cafe_overview_form_submit($form, &$form_state) {
  * @return array
  */
 function nnels_content_cafe_repository_item_list() {
+  drupal_set_title('List of Repository Items with ISBN Numbers.');
 
   // Get repository_item nodes with ISBN data.
   $query = db_select('node', 'n');
@@ -516,19 +517,29 @@ function nnels_content_cafe_repository_item_list() {
     $nids[$row->nid] = $row->title;
   }
 
+  // Get the content cafe data.
+  $node_ids    = array_keys($nids);
+  $annotations = nnels_content_cafe_select_multiple_content_cafe_annotation_rows_by_nids($node_ids);
+  $biographies = nnels_content_cafe_select_multiple_content_cafe_biography_rows_by_nids($node_ids);
+  $excerpts    = nnels_content_cafe_select_multiple_content_cafe_excerpt_rows_by_nids($node_ids);
+  $flaps       = nnels_content_cafe_select_multiple_content_cafe_flap_rows_by_nids($node_ids);
+  $jackets     = nnels_content_cafe_select_multiple_content_cafe_jacket_rows_by_nids($node_ids);
+  $tocs        = nnels_content_cafe_select_multiple_content_cafe_toc_rows_by_nids($node_ids);
+
   // Build rows for the table.
   $rows = array();
   foreach ($nids as $nid => $title) {
-    $rows[] = array(
-      l($title, 'node/' . $nid),
-      '*',
-      '*',
-      '*',
-      '*',
-      '*',
-      '*',
-      l(t('Manage'), 'node/' . $nid . '/content_cafe'),
-    );
+    $row   = array();
+    $row[] = l($title, 'node/' . $nid);
+    $row[] = (isset($annotations[$nid]) ? '*' : '');
+    $row[] = (isset($biographies[$nid]) ? '*' : '');
+    $row[] = (isset($excerpts[$nid])    ? '*' : '');
+    $row[] = (isset($flaps[$nid])       ? '*' : '');
+    $row[] = (isset($jackets[$nid])     ? '*' : '');
+    $row[] = (isset($tocs[$nid])        ? '*' : '');
+    $row[] = l(t('Manage'), 'node/' . $nid . '/content_cafe');
+
+    $rows[] = $row;
   }
 
   $output  = '';
@@ -546,8 +557,8 @@ function nnels_content_cafe_repository_item_list() {
         t('TOC'),
         t('Operations'),
       ),
-      'rows' => $rows,
-      'empty' => t('There are no repository items with attached content cafe data.'),
+      'rows'   => $rows,
+      'empty'  => t('There are no repository items with attached content cafe data.'),
     )
   );
   $output .= theme('pager');

@@ -586,6 +586,55 @@ function nnels_content_cafe_select_multiple_content_cafe_biography_rows($isbns, 
 }
 
 /**
+ * Select rows from the content_cafe_biography table.
+ *
+ * @param array $nids
+ *
+ * @return mixed
+ */
+function nnels_content_cafe_select_multiple_content_cafe_biography_rows_by_nids($nids) {
+  $records = FALSE;
+
+  if (count($nids)) {
+    $query = db_select('node_content_cafe', 'n');
+    $query->join('content_cafe_isbn_biography', 'i', 'i.isbn_id = n.isbn_id');
+    $query->join('content_cafe_biography', 'd', 'd.biography_id = i.biography_id');
+    $query->fields('n');
+    $query->fields('i');
+    $query->fields('d');
+    $query->condition('n.nid', $nids, 'IN');
+    $result = $query->execute();
+
+    if ($result->rowCount()) {
+
+      // Gather the records by nid.
+      $records = array();
+      while ($record = $result->fetchObject()) {
+        $records[$record->nid][$record->biography_id] = $record;
+      }
+
+      // Determine if one of the records has been selected.
+      foreach ($records as $nid => $nid_records) {
+        $selected = FALSE;
+        foreach ($nid_records as $id => $record) {
+          if ($record->selected) {
+            $selected = TRUE;
+          }
+        }
+
+        // No records selected, set the default selected value.
+        if (!$selected) {
+          reset($nid_records);
+          $nid_records[key($nid_records)]->selected = TRUE;
+        }
+      }
+    }
+  }
+
+  return $records;
+}
+
+/**
  * Select a row from the content_cafe_excerpt table.
  *
  * @param int $external_id
@@ -639,6 +688,55 @@ function nnels_content_cafe_select_multiple_content_cafe_excerpt_rows($isbns) {
       if (!$selected) {
         reset($records);
         $records[key($records)]->selected = TRUE;
+      }
+    }
+  }
+
+  return $records;
+}
+
+/**
+ * Select rows from the content_cafe_excerpt table.
+ *
+ * @param array $nids
+ *
+ * @return mixed
+ */
+function nnels_content_cafe_select_multiple_content_cafe_excerpt_rows_by_nids($nids) {
+  $records = FALSE;
+
+  if (count($nids)) {
+    $query = db_select('node_content_cafe', 'n');
+    $query->join('content_cafe_isbn_excerpt', 'i', 'i.isbn_id = n.isbn_id');
+    $query->join('content_cafe_excerpt', 'd', 'd.excerpt_id = i.excerpt_id');
+    $query->fields('n');
+    $query->fields('i');
+    $query->fields('d');
+    $query->condition('n.nid', $nids, 'IN');
+    $result = $query->execute();
+
+    if ($result->rowCount()) {
+
+      // Gather the records by nid.
+      $records = array();
+      while ($record = $result->fetchObject()) {
+        $records[$record->nid][$record->excerpt_id] = $record;
+      }
+
+      // Determine if one of the records has been selected.
+      foreach ($records as $nid => $nid_records) {
+        $selected = FALSE;
+        foreach ($nid_records as $id => $record) {
+          if ($record->selected) {
+            $selected = TRUE;
+          }
+        }
+
+        // No records selected, set the default selected value.
+        if (!$selected) {
+          reset($nid_records);
+          $nid_records[key($nid_records)]->selected = TRUE;
+        }
       }
     }
   }
@@ -710,6 +808,55 @@ function nnels_content_cafe_select_multiple_content_cafe_flap_rows($isbns, &$sup
 }
 
 /**
+ * Select rows from the content_cafe_flap table.
+ *
+ * @param array $nids
+ *
+ * @return mixed
+ */
+function nnels_content_cafe_select_multiple_content_cafe_flap_rows_by_nids($nids) {
+  $records = FALSE;
+
+  if (count($nids)) {
+    $query = db_select('node_content_cafe', 'n');
+    $query->join('content_cafe_isbn_flap', 'i', 'i.isbn_id = n.isbn_id');
+    $query->join('content_cafe_flap', 'd', 'd.flap_id = i.flap_id');
+    $query->fields('n');
+    $query->fields('i');
+    $query->fields('d');
+    $query->condition('n.nid', $nids, 'IN');
+    $result = $query->execute();
+
+    if ($result->rowCount()) {
+
+      // Gather the records by nid.
+      $records = array();
+      while ($record = $result->fetchObject()) {
+        $records[$record->nid][$record->flap_id] = $record;
+      }
+
+      // Determine if one of the records has been selected.
+      foreach ($records as $nid => $nid_records) {
+        $selected = FALSE;
+        foreach ($nid_records as $id => $record) {
+          if ($record->selected) {
+            $selected = TRUE;
+          }
+        }
+
+        // No records selected, set the default selected value.
+        if (!$selected) {
+          reset($nid_records);
+          $nid_records[key($nid_records)]->selected = TRUE;
+        }
+      }
+    }
+  }
+
+  return $records;
+}
+
+/**
  * Select rows from the content_cafe_jacket table.
  *
  * @param array $isbns
@@ -741,6 +888,55 @@ function nnels_content_cafe_select_multiple_content_cafe_jacket_rows($isbns) {
       if (!$selected) {
         reset($records);
         $records[key($records)]->selected = TRUE;
+      }
+    }
+  }
+
+  return $records;
+}
+
+/**
+ * Select rows from the content_cafe_jacket table.
+ *
+ * @param array $nids
+ *
+ * @return mixed
+ */
+function nnels_content_cafe_select_multiple_content_cafe_jacket_rows_by_nids($nids) {
+  $records = FALSE;
+
+  if (count($nids)) {
+    $query = db_select('node_content_cafe', 'n');
+    $query->join('content_cafe_isbn_jacket', 'i', 'i.isbn_id = n.isbn_id');
+    $query->join('content_cafe_jacket', 'd', 'd.jacket_id = i.jacket_id');
+    $query->fields('n');
+    $query->fields('i');
+    $query->fields('d');
+    $query->condition('n.nid', $nids, 'IN');
+    $result = $query->execute();
+
+    if ($result->rowCount()) {
+
+      // Gather the records by nid.
+      $records = array();
+      while ($record = $result->fetchObject()) {
+        $records[$record->nid][$record->jacket_id] = $record;
+      }
+
+      // Determine if one of the records has been selected.
+      foreach ($records as $nid => $nid_records) {
+        $selected = FALSE;
+        foreach ($nid_records as $id => $record) {
+          if ($record->selected) {
+            $selected = TRUE;
+          }
+        }
+
+        // No records selected, set the default selected value.
+        if (!$selected) {
+          reset($nid_records);
+          $nid_records[key($nid_records)]->selected = TRUE;
+        }
       }
     }
   }
@@ -802,6 +998,55 @@ function nnels_content_cafe_select_multiple_content_cafe_toc_rows($isbns) {
       if (!$selected) {
         reset($records);
         $records[key($records)]->selected = TRUE;
+      }
+    }
+  }
+
+  return $records;
+}
+
+/**
+ * Select rows from the content_cafe_toc table.
+ *
+ * @param array $nids
+ *
+ * @return mixed
+ */
+function nnels_content_cafe_select_multiple_content_cafe_toc_rows_by_nids($nids) {
+  $records = FALSE;
+
+  if (count($nids)) {
+    $query = db_select('node_content_cafe', 'n');
+    $query->join('content_cafe_isbn_toc', 'i', 'i.isbn_id = n.isbn_id');
+    $query->join('content_cafe_toc', 'd', 'd.toc_id = i.toc_id');
+    $query->fields('n');
+    $query->fields('i');
+    $query->fields('d');
+    $query->condition('n.nid', $nids, 'IN');
+    $result = $query->execute();
+
+    if ($result->rowCount()) {
+
+      // Gather the records by nid.
+      $records = array();
+      while ($record = $result->fetchObject()) {
+        $records[$record->nid][$record->toc_id] = $record;
+      }
+
+      // Determine if one of the records has been selected.
+      foreach ($records as $nid => $nid_records) {
+        $selected = FALSE;
+        foreach ($nid_records as $id => $record) {
+          if ($record->selected) {
+            $selected = TRUE;
+          }
+        }
+
+        // No records selected, set the default selected value.
+        if (!$selected) {
+          reset($nid_records);
+          $nid_records[key($nid_records)]->selected = TRUE;
+        }
       }
     }
   }
