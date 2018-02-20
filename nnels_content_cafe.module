@@ -33,7 +33,7 @@ function nnels_content_cafe_menu() {
     'weight'           => 30,
   );
   $items['admin/config/nnels/settings'] = array(
-    'title'            => 'Settings',
+    'title'            => 'Content Cafe API Settings',
     'description'      => 'API Settings',
     'page callback'    => 'drupal_get_form',
     'page arguments'   => array('nnels_content_cafe_settings_form'),
@@ -42,10 +42,18 @@ function nnels_content_cafe_menu() {
     'file path'        => drupal_get_path('module', 'nnels_content_cafe'),
   );
   $items['admin/config/nnels/tests'] = array(
-    'title'            => 'Test Calls',
+    'title'            => 'Content Cafe API Test Calls',
     'description'      => 'Test Content Cafe API Calls',
     'page callback'    => 'drupal_get_form',
     'page arguments'   => array('nnels_content_cafe_test_form'),
+    'access arguments' => array('administer nnels content cafe'),
+    'file'             => 'nnels_content_cafe.admin.inc',
+    'file path'        => drupal_get_path('module', 'nnels_content_cafe'),
+  );
+  $items['admin/config/nnels/repository_items'] = array(
+    'title'            => 'Repository Items with API Data',
+    'description'      => 'A list of repository items that have content cafe API data attached.',
+    'page callback'    => 'nnels_content_cafe_repository_item_list',
     'access arguments' => array('administer nnels content cafe'),
     'file'             => 'nnels_content_cafe.admin.inc',
     'file path'        => drupal_get_path('module', 'nnels_content_cafe'),

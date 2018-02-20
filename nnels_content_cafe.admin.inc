@@ -486,6 +486,76 @@ function nnels_content_cafe_overview_form_submit($form, &$form_state) {
 }
 
 /**
+ * Repository Item List.
+ *
+ * @return array
+ */
+function nnels_content_cafe_repository_item_list() {
+
+  // Get repository_item nodes with ISBN data.
+  $query = db_select('node', 'n');
+  $query->join('node_content_cafe', 'c', 'c.nid = n.nid');
+  $query->leftJoin('field_data_field_isbn', 'i', 'i.entity_id = n.nid');
+  $query->leftJoin('field_data_field_isbn_audio', 'a', 'a.entity_id = n.nid');
+  $query->fields('n', array('nid', 'title'));
+  $query->condition('n.type', 'repository_item');
+  $or = db_or();
+  $or->isNotNull('i.field_isbn_value');
+  $or->isNotNull('a.field_isbn_audio_value');
+  $query->condition($or);
+  $query->orderBy('n.title');
+  $query->groupBy('n.nid');
+  $query = $query->extend('PagerDefault');
+  $query->limit(50);
+
+  $result = $query->execute();
+
+  // Get a list of nids.
+  $nids = array();
+  while ($row = $result->fetchObject()) {
+    $nids[$row->nid] = $row->title;
+  }
+
+  // Build rows for the table.
+  $rows = array();
+  foreach ($nids as $nid => $title) {
+    $rows[] = array(
+      l($title, 'node/' . $nid),
+      '*',
+      '*',
+      '*',
+      '*',
+      '*',
+      '*',
+      l(t('Manage'), 'node/' . $nid . '/content_cafe'),
+    );
+  }
+
+  $output  = '';
+  // Add filter form.
+  $output .= theme(
+    'table',
+    array(
+      'header' => array(
+        t('Title'),
+        t('Annotation'),
+        t('Bigraphy'),
+        t('Excerpt'),
+        t('Flap'),
+        t('Jacket'),
+        t('TOC'),
+        t('Operations'),
+      ),
+      'rows' => $rows,
+      'empty' => t('There are no repository items with attached content cafe data.'),
+    )
+  );
+  $output .= theme('pager');
+
+  return $output;
+}
+
+/**
  * Annotation Tableselect Form.
  *
  * @param int $nid
