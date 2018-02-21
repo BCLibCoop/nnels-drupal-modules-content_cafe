@@ -1004,17 +1004,6 @@ function nnels_content_cafe_overview_toc_form($nid, $isbns, $tocs) {
 }
 
 /**
- * Refresh page callback.
- *
- * @param int $nid
- *
- * @return array
- */
-function nnels_content_cafe_refresh($nid) {
-  return array();
-}
-
-/**
  * Annotation Edit Form.
  *
  * @param array $form

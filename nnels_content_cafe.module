@@ -71,16 +71,6 @@ function nnels_content_cafe_menu() {
     'type'             => MENU_LOCAL_TASK,
     'weight'           => 50,
   );
-  $items['node/%/content_cafe/fetch'] = array(
-    'title'            => 'Fetch Data from API',
-    'description'      => 'Fetch Data from the Content Cafe API',
-    'page callback'    => 'nnels_content_cafe_refresh',
-    'page arguments'   => array(1),
-    'access arguments' => array('administer nnels content cafe'),
-    'file'             => 'nnels_content_cafe.admin.inc',
-    'file path'        => drupal_get_path('module', 'nnels_content_cafe'),
-    'type'             => MENU_LOCAL_ACTION,
-  );
   $items['node/%/content_cafe/annotation/%/edit'] = array(
     'title'            => 'Edit Annotation',
     'description'      => 'Edit a specic annotation for a repository item.',
