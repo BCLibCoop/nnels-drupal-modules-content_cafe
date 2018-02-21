@@ -754,6 +754,94 @@ function nnels_content_cafe_repository_item_list_filter_form_button_reset($form,
 }
 
 /**
+ * Repository Invalid ISBN List.
+ *
+ * @return array
+ */
+function nnels_content_cafe_repository_invalid_isbn_list() {
+  drupal_set_title('List of Repository Items with Invalid ISBN Numbers.');
+
+  // Get all repository_item nodes with ISBN data. This needs to be paged
+  // manually because each record will need be validated.
+  $query = db_select('node', 'n');
+  $query->join('node_content_cafe', 'c', 'c.nid = n.nid');
+  $query->leftJoin('field_data_field_isbn', 'i', 'i.entity_id = n.nid');
+  $query->leftJoin('field_data_field_isbn_audio', 'a', 'a.entity_id = n.nid');
+  $query->fields('n', array('nid', 'title'));
+  $query->fields('i', array('field_isbn_value'));
+  $query->fields('a', array('field_isbn_audio_value'));
+  $query->condition('n.type', 'repository_item');
+  $or = db_or();
+  $or->isNotNull('i.field_isbn_value');
+  $or->isNotNull('a.field_isbn_audio_value');
+  $query->condition($or);
+  $query->orderBy('n.title');
+  $query->groupBy('n.nid');
+
+  $result = $query->execute();
+
+  // Get a list of nids.
+  $nids = array();
+  while ($row = $result->fetchObject()) {
+    $isbn_valid       = (isset($row->field_isbn_value)       ? nnels_content_cafe_validate_isbn($row->field_isbn_value)       : TRUE);
+    $isbn_audio_valid = (isset($row->field_isbn_audio_value) ? nnels_content_cafe_validate_isbn($row->field_isbn_audio_value) : TRUE);
+    if (!$isbn_valid || !$isbn_audio_valid) {
+      if ($isbn_valid) {
+        $row->field_isbn_value = NULL;
+      }
+      if ($isbn_audio_valid) {
+        $row->field_isbn_audio_value = NULL;
+      }
+      $nids[$row->nid] = $row;
+    }
+  }
+
+  // Initialize the pager.
+  $page  = pager_find_page();
+  $limit = 50;
+  $start = $page * $limit;
+  pager_default_initialize(count($nids), $limit);
+
+  // Extract the 50 records (max) for the table.
+  $table_end   = $start + $limit;
+  $array_index = 0;
+  $rows        = array();
+  foreach ($nids as $nid => $record) {
+    if ($array_index >= $table_end) {
+      break;
+    }
+    if ($array_index >= $start) {
+      $row   = array();
+      $row[] = l($record->title, 'node/' . $nid);
+      $row[] = $record->field_isbn_value;
+      $row[] = $record->field_isbn_audio_value;
+      $row[] = l(t('Edit'), 'node/' . $nid . '/edit');
+
+      $rows[] = $row;
+    }
+    $array_index++;
+  }
+
+  $output  = drupal_render($filter_form);
+  $output .= theme(
+    'table',
+    array(
+      'header' => array(
+        t('Title'),
+        t('Invalid ISBN'),
+        t('Invalid Audio ISBN'),
+        t('Operations'),
+      ),
+      'rows'   => $rows,
+      'empty'  => t('There are no repository items with invalid ISBN numbers.'),
+    )
+  );
+  $output .= theme('pager');
+
+  return $output;
+}
+
+/**
  * Annotation Tableselect Form.
  *
  * @param int $nid

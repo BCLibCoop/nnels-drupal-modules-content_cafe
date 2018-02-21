@@ -51,9 +51,17 @@ function nnels_content_cafe_menu() {
     'file path'        => drupal_get_path('module', 'nnels_content_cafe'),
   );
   $items['admin/config/nnels/repository_items'] = array(
-    'title'            => 'Repository Items with API Data',
+    'title'            => 'Repository Items with ISBN Numbers',
     'description'      => 'A list of repository items that have content cafe API data attached.',
     'page callback'    => 'nnels_content_cafe_repository_item_list',
+    'access arguments' => array('administer nnels content cafe'),
+    'file'             => 'nnels_content_cafe.admin.inc',
+    'file path'        => drupal_get_path('module', 'nnels_content_cafe'),
+  );
+  $items['admin/config/nnels/invalid_isbns'] = array(
+    'title'            => 'Repository Items with invalid ISBN Numbers',
+    'description'      => 'A list of repository items that have invalid ISBN numbers.',
+    'page callback'    => 'nnels_content_cafe_repository_invalid_isbn_list',
     'access arguments' => array('administer nnels content cafe'),
     'file'             => 'nnels_content_cafe.admin.inc',
     'file path'        => drupal_get_path('module', 'nnels_content_cafe'),
