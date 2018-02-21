@@ -3,7 +3,6 @@
 /**
  * @todo if an ISBN value changes on a node, need to disassociate the node with the ISBN.
  * @todo save the jacket image - add jacket edit form.
- * @todo hook_views_data
  */
 
 /**
@@ -28,7 +27,7 @@ function nnels_content_cafe_drush_command() {
  * drush_[COMMAND_NAME]().
  */
 function drush_nnels_content_cafe_update_content_cafe() {
-  delete_all_data();
+  // delete_all_data();
   nnels_content_cafe_update_content_cafe(TRUE);
 }
 
@@ -37,7 +36,7 @@ function drush_nnels_content_cafe_update_content_cafe() {
  * drush_[COMMAND_NAME]().
  */
 function drush_nnels_content_cafe_update_content_cafe_all() {
-  delete_all_data();
+  // delete_all_data();
   nnels_content_cafe_update_content_cafe();
 }
 
@@ -462,20 +461,20 @@ function nnels_content_cafe_conditionally_insert_node_content_cafe_row($nid, $is
 
 
 
-function delete_all_data() {
-  db_delete('content_cafe_isbn')->execute();
-  db_delete('content_cafe_supplier')->execute();
-  db_delete('content_cafe_annotation')->execute();
-  db_delete('content_cafe_isbn_annotation')->execute();
-  db_delete('content_cafe_biography')->execute();
-  db_delete('content_cafe_isbn_biography')->execute();
-  db_delete('content_cafe_excerpt')->execute();
-  db_delete('content_cafe_isbn_excerpt')->execute();
-  db_delete('content_cafe_flap')->execute();
-  db_delete('content_cafe_isbn_flap')->execute();
-  db_delete('content_cafe_jacket')->execute();
-  db_delete('content_cafe_isbn_jacket')->execute();
-  db_delete('content_cafe_toc')->execute();
-  db_delete('content_cafe_isbn_toc')->execute();
-  db_delete('node_content_cafe')->execute();
-}
+// function delete_all_data() {
+//   db_delete('content_cafe_isbn')->execute();
+//   db_delete('content_cafe_supplier')->execute();
+//   db_delete('content_cafe_annotation')->execute();
+//   db_delete('content_cafe_isbn_annotation')->execute();
+//   db_delete('content_cafe_biography')->execute();
+//   db_delete('content_cafe_isbn_biography')->execute();
+//   db_delete('content_cafe_excerpt')->execute();
+//   db_delete('content_cafe_isbn_excerpt')->execute();
+//   db_delete('content_cafe_flap')->execute();
+//   db_delete('content_cafe_isbn_flap')->execute();
+//   db_delete('content_cafe_jacket')->execute();
+//   db_delete('content_cafe_isbn_jacket')->execute();
+//   db_delete('content_cafe_toc')->execute();
+//   db_delete('content_cafe_isbn_toc')->execute();
+//   db_delete('node_content_cafe')->execute();
+// }

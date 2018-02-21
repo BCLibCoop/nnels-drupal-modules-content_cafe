@@ -6,3 +6,8 @@ package = NNELS
 configure = admin/configure/nnels/content_cafe
 
 files[] = plugins/nnels_content_cafe_selected_annotation_views_field_handler.inc
+files[] = plugins/nnels_content_cafe_selected_biography_views_field_handler.inc
+files[] = plugins/nnels_content_cafe_selected_excerpt_views_field_handler.inc
+files[] = plugins/nnels_content_cafe_selected_flap_views_field_handler.inc
+files[] = plugins/nnels_content_cafe_selected_jacket_views_field_handler.inc
+files[] = plugins/nnels_content_cafe_selected_toc_views_field_handler.inc
