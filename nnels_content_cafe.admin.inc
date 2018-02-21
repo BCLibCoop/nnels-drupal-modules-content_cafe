@@ -421,65 +421,86 @@ function nnels_content_cafe_overview_form_submit($form, &$form_state) {
   $biographies  = nnels_content_cafe_select_multiple_content_cafe_biography_rows($isbn_ids, $supplier_ids);
   $excerpts     = nnels_content_cafe_select_multiple_content_cafe_excerpt_rows($isbn_ids);
   $flaps        = nnels_content_cafe_select_multiple_content_cafe_flap_rows($isbn_ids, $supplier_ids);
-  // $jackets     = nnels_content_cafe_select_multiple_content_cafe_jacket_rows($isbn_ids, $supplier_ids);
+  $jackets      = nnels_content_cafe_select_multiple_content_cafe_jacket_rows($isbn_ids);
   $tocs         = nnels_content_cafe_select_multiple_content_cafe_toc_rows($isbn_ids);
   $suppliers    = nnels_content_cafe_select_multiple_content_cafe_supplier_rows(array_keys($supplier_ids));
 
   // Update selected annotation.
-  foreach ($annotations as $annotation_id => $annotation) {
-    if ($annotation_id == $selected_annotation_id) {
-      $annotation->selected = TRUE;
+  if ($annotations) {
+    foreach ($annotations as $annotation_id => $annotation) {
+      if ($annotation_id == $selected_annotation_id) {
+        $annotation->selected = TRUE;
+      }
+      else {
+        $annotation->selected = FALSE;
+      }
+      nnels_content_cafe_update_content_cafe_isbn_annotation_row($annotation_id, $annotation->selected);
     }
-    else {
-      $annotation->selected = FALSE;
-    }
-    nnels_content_cafe_update_content_cafe_isbn_annotation_row($annotation_id, $annotation->selected);
   }
 
   // Update selected biography.
-  foreach ($biographies as $biography_id => $biography) {
-    if ($biography_id == $selected_biography_id) {
-      $biography->selected = TRUE;
+  if ($biographies) {
+    foreach ($biographies as $biography_id => $biography) {
+      if ($biography_id == $selected_biography_id) {
+        $biography->selected = TRUE;
+      }
+      else {
+        $biography->selected = FALSE;
+      }
+      nnels_content_cafe_update_content_cafe_isbn_biography_row($biography_id, $biography->selected);
     }
-    else {
-      $biography->selected = FALSE;
-    }
-    nnels_content_cafe_update_content_cafe_isbn_biography_row($biography_id, $biography->selected);
   }
 
   // Update selected excerpt.
-  foreach ($excerpts as $excerpt_id => $excerpt) {
-    if ($excerpt_id == $selected_excerpt_id) {
-      $excerpt->selected = TRUE;
+  if ($excerpts) {
+    foreach ($excerpts as $excerpt_id => $excerpt) {
+      if ($excerpt_id == $selected_excerpt_id) {
+        $excerpt->selected = TRUE;
+      }
+      else {
+        $excerpt->selected = FALSE;
+      }
+      nnels_content_cafe_update_content_cafe_isbn_excerpt_row($excerpt_id, $excerpt->selected);
     }
-    else {
-      $excerpt->selected = FALSE;
-    }
-    nnels_content_cafe_update_content_cafe_isbn_excerpt_row($excerpt_id, $excerpt->selected);
   }
 
   // Update selected flap.
-  foreach ($flaps as $flap_id => $flap) {
-    if ($flap_id == $selected_flap_id) {
-      $flap->selected = TRUE;
+  if ($flaps) {
+    foreach ($flaps as $flap_id => $flap) {
+      if ($flap_id == $selected_flap_id) {
+        $flap->selected = TRUE;
+      }
+      else {
+        $flap->selected = FALSE;
+      }
+      nnels_content_cafe_update_content_cafe_isbn_flap_row($flap_id, $flap->selected);
     }
-    else {
-      $flap->selected = FALSE;
-    }
-    nnels_content_cafe_update_content_cafe_isbn_flap_row($flap_id, $flap->selected);
   }
 
   // Update selected jacket.
+  if ($jackets) {
+    foreach ($jackets as $jacket_id => $jacket) {
+      if ($jacket_id == $selected_jacket_id) {
+        $jacket->selected = TRUE;
+      }
+      else {
+        $jacket->selected = FALSE;
+      }
+      nnels_content_cafe_update_content_cafe_isbn_jacket_row($jacket_id, $jacket->selected);
+    }
+  }
 
   // Update selected toc.
-  foreach ($tocs as $toc_id => $toc) {
-    if ($toc_id == $selected_toc_id) {
-      $toc->selected = TRUE;
+  if ($tocs) {
+    foreach ($tocs as $toc_id => $toc) {
+      if ($toc_id == $selected_toc_id) {
+        $toc->selected = TRUE;
+      }
+      else {
+        $toc->selected = FALSE;
+      }
+      nnels_content_cafe_update_content_cafe_isbn_toc_row($toc_id, $toc->selected);
     }
-    else {
-      $toc->selected = FALSE;
-    }
-    nnels_content_cafe_update_content_cafe_isbn_toc_row($toc_id, $toc->selected);
   }
 
   drupal_set_message(t('Selected data saved successfully.'));
@@ -557,7 +578,15 @@ function nnels_content_cafe_repository_item_list() {
       $row[] = (isset($flaps[$nid])       ? '*' : '');
       $row[] = (isset($jackets[$nid])     ? '*' : '');
       $row[] = (isset($tocs[$nid])        ? '*' : '');
-      $row[] = l(t('Manage'), 'node/' . $nid . '/content_cafe');
+      $row[] = l(
+        t('Manage'),
+        'node/' . $nid . '/content_cafe',
+        array(
+          'query' => array(
+            'destination' => 'admin/config/nnels/repository_items',
+          ),
+        )
+      );
 
       $rows[] = $row;
     }
@@ -815,7 +844,15 @@ function nnels_content_cafe_repository_invalid_isbn_list() {
       $row[] = l($record->title, 'node/' . $nid);
       $row[] = $record->field_isbn_value;
       $row[] = $record->field_isbn_audio_value;
-      $row[] = l(t('Edit'), 'node/' . $nid . '/edit');
+      $row[] = l(
+        t('Edit'),
+        'node/' . $nid . '/edit',
+        array(
+          'query' => array(
+            'destination' => 'admin/config/nnels/repository_items',
+          ),
+        )
+      );
 
       $rows[] = $row;
     }

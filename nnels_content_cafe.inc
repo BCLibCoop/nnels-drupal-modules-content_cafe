@@ -1464,6 +1464,25 @@ function nnels_content_cafe_update_content_cafe_flap_row($external_id, $flap) {
 }
 
 /**
+ * Update a row in the content_cafe_isbn_jacket table.
+ *
+ * @param int $jacket_id
+ * @param bool $selected
+ *
+ * @return void
+ */
+function nnels_content_cafe_update_content_cafe_isbn_jacket_row($jacket_id, $selected) {
+  db_update('content_cafe_isbn_jacket')
+    ->fields(
+      array(
+        'selected' => (int)$selected,
+      )
+    )
+    ->condition('jacket_id', $jacket_id)
+    ->execute();
+}
+
+/**
  * Update a row in the content_cafe_isbn_flap table.
  *
  * @param int $flap_id
