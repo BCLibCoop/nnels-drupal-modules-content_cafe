@@ -410,46 +410,55 @@ function nnels_content_cafe_process_data_jackets($isbn_id, $isbn, $xml_request_i
   $xml_jacket_items = $xml_request_item->JacketItems;
   if (isset($xml_jacket_items)) {
     foreach ($xml_jacket_items->children() as $xml_jacket_item) {
-      $jacket_image_url = (string)$xml_jacket_item->Jacket;
+      $external_id = (string)$xml_jacket_item['ID'];
+      $jacket      = nnels_content_cafe_select_content_cafe_jacket_row($external_id);
+      if ($jacket) {
+        nnels_content_cafe_insert_content_cafe_isbn_jacket_row($isbn_id, $flap->flap_id);
+      }
+      else {
+        $jacket_image_url = (string)$xml_jacket_item->Jacket;
 
-      $curl = curl_init();
+        $curl = curl_init();
 
-      curl_setopt($curl, CURLOPT_URL,            $jacket_image_url);
-      curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 10);
-      curl_setopt($curl, CURLOPT_TIMEOUT,        10);
-      curl_setopt($curl, CURLOPT_RETURNTRANSFER, TRUE);
-      
-      $headers = array();
-      curl_setopt($curl, CURLOPT_HEADERFUNCTION,
-        function($curl, $header) use (&$headers)
-        {
-          $len = strlen($header);
-          $header = explode(':', $header, 2);
-          if (count($header) < 2) // ignore invalid headers
+        curl_setopt($curl, CURLOPT_URL,            $jacket_image_url);
+        curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 10);
+        curl_setopt($curl, CURLOPT_TIMEOUT,        10);
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, TRUE);
+        
+        $headers = array();
+        curl_setopt($curl, CURLOPT_HEADERFUNCTION,
+          function($curl, $header) use (&$headers)
+          {
+            $len = strlen($header);
+            $header = explode(':', $header, 2);
+            if (count($header) < 2) // ignore invalid headers
+              return $len;
+
+            $name = strtolower(trim($header[0]));
+            if (!array_key_exists($name, $headers))
+              $headers[$name] = [trim($header[1])];
+            else
+              $headers[$name][] = trim($header[1]);
+
             return $len;
+          }
+        );
 
-          $name = strtolower(trim($header[0]));
-          if (!array_key_exists($name, $headers))
-            $headers[$name] = [trim($header[1])];
-          else
-            $headers[$name][] = trim($header[1]);
+        $response = curl_exec($curl);
 
-          return $len;
-        }
-      );
+        // Determine extension from the response headers.
+        $mime_mapping = file_mimetype_mapping();
+        $mime_types   = array_flip($mime_mapping['mimetypes']);
+        $extensions   = array_flip($mime_mapping['extensions']);
+        $extension_id = $mime_types[$headers['content-type'][0]];
+        $extension    = $extensions[$extension_id];
 
-      $response = curl_exec($curl);
-
-      // Determine extension from the response headers.
-      $mime_mapping = file_mimetype_mapping();
-      $mime_types   = array_flip($mime_mapping['mimetypes']);
-      $extensions   = array_flip($mime_mapping['extensions']);
-      $extension_id = $mime_types[$headers['content-type'][0]];
-      $extension    = $extensions[$extension_id];
-
-      // Store the file in the tmp folder until it can be moved to S3.
-      file_put_contents(file_directory_temp() . '/' . $isbn . '.' . $extension, $response);
-exit;
+        // Send the file to S3, replace existing and then update the database.
+        $file      = file_save_data($response, 's3://book-covers/' . $isbn . '.' . $extension, FILE_EXISTS_REPLACE);
+        file_usage_add($file, 'nnels_content_cafe', 'jacket', $isbn_id);
+        $jacket_id = nnels_content_cafe_insert_content_cafe_jacket_row($external_id, $file->fid);
+        nnels_content_cafe_insert_content_cafe_isbn_jacket_row($isbn_id, $jacket_id);
+      }
     }
   }
 }

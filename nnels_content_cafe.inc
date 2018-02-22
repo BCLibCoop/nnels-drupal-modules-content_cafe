@@ -257,6 +257,46 @@ function nnels_content_cafe_insert_content_cafe_isbn_flap_row($isbn_id, $flap_id
 }
 
 /**
+ * Insert a row into the content_cafe_jacket table.
+ *
+ * @param int $external_id
+ * @param int $fid
+ *
+ * @return int
+ */
+function nnels_content_cafe_insert_content_cafe_jacket_row($external_id, $fid) {
+  print "Insert into content_cafe_jacket\n";
+  return db_insert('content_cafe_jacket')
+    ->fields(
+      array(
+        'external_id' => $external_id,
+        'fid'         => $fid,
+      )
+    )
+    ->execute();
+}
+
+/**
+ * Insert a row into the content_cafe_isbn_jacket table.
+ *
+ * @param int $isbn_id
+ * @param int $jacket_id
+ *
+ * @return int
+ */
+function nnels_content_cafe_insert_content_cafe_isbn_jacket_row($isbn_id, $jacket_id) {
+  print "Insert into content_cafe_isbn_jacket\n";
+  return db_insert('content_cafe_isbn_jacket')
+    ->fields(
+      array(
+        'isbn_id'   => $isbn_id,
+        'jacket_id' => $jacket_id,
+      )
+    )
+    ->execute();
+}
+
+/**
  * Insert a row into the content_cafe_toc table.
  *
  * @param int $external_id
@@ -1009,6 +1049,28 @@ function nnels_content_cafe_select_all_content_cafe_flap_rows($quick = FALSE) {
 }
 
 /**
+ * Select a row from the content_cafe_jacket table.
+ *
+ * @param int $external_id
+ *
+ * @return mixed
+ */
+function nnels_content_cafe_select_content_cafe_jacket_row($external_id) {
+  print "Select from content_cafe_jacket\n";
+  $result = db_select('content_cafe_jacket', 'f')
+    ->fields('f')
+    ->condition('f.external_id', $external_id)
+    ->execute();
+
+  $record = FALSE;
+  if ($result->rowCount()) {
+    $record = $result->fetchObject();
+  }
+
+  return $record;
+}
+
+/**
  * Select rows from the content_cafe_jacket table.
  *
  * @param array $isbns
@@ -1464,25 +1526,6 @@ function nnels_content_cafe_update_content_cafe_flap_row($external_id, $flap) {
 }
 
 /**
- * Update a row in the content_cafe_isbn_jacket table.
- *
- * @param int $jacket_id
- * @param bool $selected
- *
- * @return void
- */
-function nnels_content_cafe_update_content_cafe_isbn_jacket_row($jacket_id, $selected) {
-  db_update('content_cafe_isbn_jacket')
-    ->fields(
-      array(
-        'selected' => (int)$selected,
-      )
-    )
-    ->condition('jacket_id', $jacket_id)
-    ->execute();
-}
-
-/**
  * Update a row in the content_cafe_isbn_flap table.
  *
  * @param int $flap_id
@@ -1498,6 +1541,26 @@ function nnels_content_cafe_update_content_cafe_isbn_flap_row($flap_id, $selecte
       )
     )
     ->condition('flap_id', $flap_id)
+    ->execute();
+}
+
+
+/**
+ * Update a row in the content_cafe_isbn_jacket table.
+ *
+ * @param int $jacket_id
+ * @param bool $selected
+ *
+ * @return void
+ */
+function nnels_content_cafe_update_content_cafe_isbn_jacket_row($jacket_id, $selected) {
+  db_update('content_cafe_isbn_jacket')
+    ->fields(
+      array(
+        'selected' => (int)$selected,
+      )
+    )
+    ->condition('jacket_id', $jacket_id)
     ->execute();
 }
 
