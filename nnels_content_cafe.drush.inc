@@ -22,12 +22,36 @@ function nnels_content_cafe_drush_command() {
   return $commands;
 }
 
+function delete_all_data() {
+  db_delete('content_cafe_isbn')->execute();
+  db_delete('content_cafe_supplier')->execute();
+  db_delete('content_cafe_annotation')->execute();
+  db_delete('content_cafe_isbn_annotation')->execute();
+  db_delete('content_cafe_biography')->execute();
+  db_delete('content_cafe_isbn_biography')->execute();
+  db_delete('content_cafe_excerpt')->execute();
+  db_delete('content_cafe_isbn_excerpt')->execute();
+  db_delete('content_cafe_flap')->execute();
+  db_delete('content_cafe_isbn_flap')->execute();
+  db_delete('content_cafe_jacket')->execute();
+  db_delete('content_cafe_isbn_jacket')->execute();
+  db_delete('content_cafe_toc')->execute();
+  db_delete('content_cafe_isbn_toc')->execute();
+  db_delete('node_content_cafe')->execute();
+}
+
 /**
  * Drush command logic.
  * drush_[COMMAND_NAME]().
  */
 function drush_nnels_content_cafe_update_content_cafe() {
-  // delete_all_data();
+
+  // Since the image URL's are dynamic there is no indication what extension
+  // they should have. Mime type is available in the response headers but 
+  // drush does not define file_mimetype_mapping() during bootstrap (as it
+  // should), so this file needs to be included.
+  require_once DRUPAL_ROOT . '/includes/file.mimetypes.inc';
+delete_all_data();
   nnels_content_cafe_update_content_cafe(TRUE);
 }
 
@@ -36,7 +60,13 @@ function drush_nnels_content_cafe_update_content_cafe() {
  * drush_[COMMAND_NAME]().
  */
 function drush_nnels_content_cafe_update_content_cafe_all() {
-  // delete_all_data();
+
+  // Since the image URL's are dynamic there is no indication what extension
+  // they should have. Mime type is available in the response headers but 
+  // drush does not define file_mimetype_mapping() during bootstrap (as it
+  // should), so this file needs to be included.
+  require_once DRUPAL_ROOT . '/includes/file.mimetypes.inc';
+delete_all_data();
   nnels_content_cafe_update_content_cafe();
 }
 
@@ -241,7 +271,7 @@ function nnels_content_cafe_process_data($nid, $isbn, $data, &$exiting) {
         nnels_content_cafe_process_data_biographies($isbn_id, $xml_request_item);
         nnels_content_cafe_process_data_excerpts($isbn_id, $xml_request_item);
         nnels_content_cafe_process_data_flaps($isbn_id, $xml_request_item);
-        // nnels_content_cafe_process_data_jackets($isbn_id, $xml_request_item);
+        nnels_content_cafe_process_data_jackets($isbn_id, $isbn, $xml_request_item);
         nnels_content_cafe_process_data_tocs($isbn_id, $xml_request_item);
 
         // It is possible that a single node has multiple ISBN's attached and
@@ -371,16 +401,55 @@ function nnels_content_cafe_process_data_flaps($isbn_id, $xml_request_item) {
  * Process Jacket Data from the API
  *
  * @param int $isbn_id
+ * @param string $isbn
  * @param object $xml_request_item
  *
  * @return void
  */
-function nnels_content_cafe_process_data_jackets($isbn_id, $xml_request_item) {
+function nnels_content_cafe_process_data_jackets($isbn_id, $isbn, $xml_request_item) {
   $xml_jacket_items = $xml_request_item->JacketItems;
   if (isset($xml_jacket_items)) {
     foreach ($xml_jacket_items->children() as $xml_jacket_item) {
       $jacket_image_url = (string)$xml_jacket_item->Jacket;
-  print 'Jacket Image URL: ' . $jacket_image_url . "\n";
+
+      $curl = curl_init();
+
+      curl_setopt($curl, CURLOPT_URL,            $jacket_image_url);
+      curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 10);
+      curl_setopt($curl, CURLOPT_TIMEOUT,        10);
+      curl_setopt($curl, CURLOPT_RETURNTRANSFER, TRUE);
+      
+      $headers = array();
+      curl_setopt($curl, CURLOPT_HEADERFUNCTION,
+        function($curl, $header) use (&$headers)
+        {
+          $len = strlen($header);
+          $header = explode(':', $header, 2);
+          if (count($header) < 2) // ignore invalid headers
+            return $len;
+
+          $name = strtolower(trim($header[0]));
+          if (!array_key_exists($name, $headers))
+            $headers[$name] = [trim($header[1])];
+          else
+            $headers[$name][] = trim($header[1]);
+
+          return $len;
+        }
+      );
+
+      $response = curl_exec($curl);
+
+      // Determine extension from the response headers.
+      $mime_mapping = file_mimetype_mapping();
+      $mime_types   = array_flip($mime_mapping['mimetypes']);
+      $extensions   = array_flip($mime_mapping['extensions']);
+      $extension_id = $mime_types[$headers['content-type'][0]];
+      $extension    = $extensions[$extension_id];
+
+      // Store the file in the tmp folder until it can be moved to S3.
+      file_put_contents(file_directory_temp() . '/' . $isbn . '.' . $extension, $response);
+exit;
     }
   }
 }
@@ -453,28 +522,3 @@ function nnels_content_cafe_conditionally_insert_node_content_cafe_row($nid, $is
     nnels_content_cafe_insert_node_content_cafe_row($nid, $isbn_id);
   }
 }
-
-
-
-
-
-
-
-
-// function delete_all_data() {
-//   db_delete('content_cafe_isbn')->execute();
-//   db_delete('content_cafe_supplier')->execute();
-//   db_delete('content_cafe_annotation')->execute();
-//   db_delete('content_cafe_isbn_annotation')->execute();
-//   db_delete('content_cafe_biography')->execute();
-//   db_delete('content_cafe_isbn_biography')->execute();
-//   db_delete('content_cafe_excerpt')->execute();
-//   db_delete('content_cafe_isbn_excerpt')->execute();
-//   db_delete('content_cafe_flap')->execute();
-//   db_delete('content_cafe_isbn_flap')->execute();
-//   db_delete('content_cafe_jacket')->execute();
-//   db_delete('content_cafe_isbn_jacket')->execute();
-//   db_delete('content_cafe_toc')->execute();
-//   db_delete('content_cafe_isbn_toc')->execute();
-//   db_delete('node_content_cafe')->execute();
-// }

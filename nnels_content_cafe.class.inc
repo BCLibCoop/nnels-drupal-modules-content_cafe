@@ -467,6 +467,8 @@ class NNELSContentCafe {
     $this->curl = curl_init();
 
     curl_setopt($this->curl, CURLOPT_URL,            $this->api_url);
+    curl_setopt($this->curl, CURLOPT_CONNECTTIMEOUT, 10);
+    curl_setopt($this->curl, CURLOPT_TIMEOUT,        10);
     curl_setopt($this->curl, CURLOPT_POST,           TRUE);
     curl_setopt($this->curl, CURLOPT_HTTPHEADER,     array('Content-Type: application/soap+xml'));
     curl_setopt($this->curl, CURLOPT_RETURNTRANSFER, TRUE);
