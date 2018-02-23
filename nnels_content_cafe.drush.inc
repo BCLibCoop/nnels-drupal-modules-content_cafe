@@ -415,7 +415,7 @@ function nnels_content_cafe_process_data_jackets($isbn_id, $isbn, $xml_request_i
       $external_id = (string)$xml_jacket_item['ID'];
       $jacket      = nnels_content_cafe_select_content_cafe_jacket_row($external_id);
       if ($jacket) {
-        nnels_content_cafe_insert_content_cafe_isbn_jacket_row($isbn_id, $flap->flap_id);
+        nnels_content_cafe_insert_content_cafe_isbn_jacket_row($isbn_id, $jacket->jacket_id);
       }
       else {
         $jacket_image_url = (string)$xml_jacket_item->Jacket;
