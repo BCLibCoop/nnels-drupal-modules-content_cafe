@@ -21,24 +21,6 @@ function nnels_content_cafe_drush_command() {
   return $commands;
 }
 
-function delete_all_data() {
-  db_delete('content_cafe_isbn')->execute();
-  db_delete('content_cafe_supplier')->execute();
-  db_delete('content_cafe_annotation')->execute();
-  db_delete('content_cafe_isbn_annotation')->execute();
-  db_delete('content_cafe_biography')->execute();
-  db_delete('content_cafe_isbn_biography')->execute();
-  db_delete('content_cafe_excerpt')->execute();
-  db_delete('content_cafe_isbn_excerpt')->execute();
-  db_delete('content_cafe_flap')->execute();
-  db_delete('content_cafe_isbn_flap')->execute();
-  db_delete('content_cafe_jacket')->execute();
-  db_delete('content_cafe_isbn_jacket')->execute();
-  db_delete('content_cafe_toc')->execute();
-  db_delete('content_cafe_isbn_toc')->execute();
-  db_delete('node_content_cafe')->execute();
-}
-
 /**
  * Drush command logic.
  * drush_[COMMAND_NAME]().
@@ -50,7 +32,7 @@ function drush_nnels_content_cafe_update_content_cafe() {
   // drush does not define file_mimetype_mapping() during bootstrap (as it
   // should), so this file needs to be included.
   require_once DRUPAL_ROOT . '/includes/file.mimetypes.inc';
-delete_all_data();
+
   nnels_content_cafe_update_content_cafe(TRUE);
 }
 
@@ -65,7 +47,7 @@ function drush_nnels_content_cafe_update_content_cafe_all() {
   // drush does not define file_mimetype_mapping() during bootstrap (as it
   // should), so this file needs to be included.
   require_once DRUPAL_ROOT . '/includes/file.mimetypes.inc';
-delete_all_data();
+
   nnels_content_cafe_update_content_cafe();
 }
 
