@@ -1056,7 +1056,6 @@ function nnels_content_cafe_select_all_content_cafe_flap_rows($quick = FALSE) {
  * @return mixed
  */
 function nnels_content_cafe_select_content_cafe_jacket_row($external_id) {
-  print "Select from content_cafe_jacket\n";
   $result = db_select('content_cafe_jacket', 'f')
     ->fields('f')
     ->condition('f.external_id', $external_id)
@@ -1544,6 +1543,24 @@ function nnels_content_cafe_update_content_cafe_isbn_flap_row($flap_id, $selecte
     ->execute();
 }
 
+/**
+ * Update a row in the content_cafe_jacket table.
+ *
+ * @param int $external_id
+ * @param int $fid
+ *
+ * @return void
+ */
+function nnels_content_cafe_update_content_cafe_jacket_row($external_id, $fid) {
+  db_update('content_cafe_jacket')
+    ->fields(
+      array(
+        'fid' => $fid,
+      )
+    )
+    ->condition('external_id', $external_id)
+    ->execute();
+}
 
 /**
  * Update a row in the content_cafe_isbn_jacket table.

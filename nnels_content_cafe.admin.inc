@@ -1350,12 +1350,75 @@ function nnels_content_cafe_flap_edit_form_submit($form, &$form_state) {
  * @param array $form
  * @param array $form_state
  * @param int $nid
- * @param int $jacket_id
+ * @param int $external_id
  *
  * @return array
  */
-function nnels_content_cafe_jacket_edit_form($form, &$form_state, $nid, $jacket_id) {
-  return array();
+function nnels_content_cafe_jacket_edit_form($form, &$form_state, $nid, $external_id) {
+  $node   = node_load($nid);
+  $jacket = nnels_content_cafe_select_content_cafe_jacket_row($external_id);
+  drupal_set_title(t('Edit jacket %id for %node.', array('%id' => $external_id, '%node' => $node->title)), PASS_THROUGH);
+
+  $form = array();
+
+  $form['jacket'] = array(
+    '#type'            => 'managed_file',
+    '#title'           => t('Jacket'),
+    '#default_value'   => $jacket->fid,
+    '#required'        => TRUE,
+    '#upload_location' => 's3://book-covers',
+  );
+
+  $form['actions'] = array(
+    '#type'          => 'actions',
+  );
+  $form['actions']['submit'] = array(
+    '#type'          => 'submit',
+    '#value'         => t('Save changes'),
+    '#suffix'        => l(t('Cancel'), 'node/' . $nid . '/content_cafe'),
+  );
+
+  return $form;
+}
+
+/**
+ * Jacket Edit Form Submit.
+ *
+ * @param array $form
+ * @param array $form_state
+ *
+ * @return void
+ */
+function nnels_content_cafe_jacket_edit_form_submit($form, &$form_state) {
+  $nid         = $form_state['build_info']['args'][0];
+  $external_id = $form_state['build_info']['args'][1];
+  $fid         = $form_state['values']['jacket'];
+
+  // Make sure a file was updated before processing.
+  $jacket = nnels_content_cafe_select_content_cafe_jacket_row($external_id);
+  if (!$jacket || ($jacket && $jacket->fid != $fid)) {
+
+    // Remove old file.
+    if ($jacket) {
+      $jacket_old = file_load($jacket->fid);
+      if ($jacket_old) {
+        file_delete($jacket_old);
+      }
+    }
+
+    // Make new file permenant.
+    $jacket_new = file_load($fid);
+    if ($jacket_new) {
+      $jacket_new->status = FILE_STATUS_PERMENANT;
+      file_save($jacket_new);
+    }
+
+    // Update the fid.
+    nnels_content_cafe_update_content_cafe_jacket_row($external_id, $fid);
+    drupal_set_message(t('Jacket has been updated.'));
+  }
+
+  $form_state['redirect'] = 'node/' . $nid . '/content_cafe';
 }
 
 /**
