@@ -53,6 +53,22 @@ function nnels_content_cafe_validate_isbn(&$isbn) {
 }
 
 /**
+ * Delete a row from the node_content_cafe table.
+ *
+ * @param int $nid
+ * @param int $isbn_id
+ *
+ * @return void
+ */
+function nnels_content_cafe_delete_node_content_cafe_row($nid, $isbn_id) {
+  print "Delete from node_content_cafe\n";
+  db_delete('node_content_cafe')
+    ->condition('nid', $nid)
+    ->condition('isbn_id', $isbn_id)
+    ->execute();
+}
+
+/**
  * Insert a row into the content_cafe_isbn table.
  *
  * @param string $isbn

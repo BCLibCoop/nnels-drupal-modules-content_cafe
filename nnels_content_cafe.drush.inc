@@ -1,10 +1,6 @@
 <?php
 
 /**
- * @todo if an ISBN value changes on a node, need to disassociate the node with the ISBN.
- */
-
-/**
  * Implements hook_drush_command().
  */
 function nnels_content_cafe_drush_command() {
@@ -71,6 +67,7 @@ function nnels_content_cafe_update_content_cafe($limit = FALSE) {
     nnels_content_cafe_check_isbn($row->nid, $row->field_isbn_value, $isbns, $existing);
     nnels_content_cafe_check_isbn($row->nid, $row->field_isbn_audio_value, $isbns, $existing);
   }
+  nnels_content_cafe_check_changed($isbns, $existing);
 
   // Fetch the data from the API.
   $calls = 0;
@@ -142,6 +139,30 @@ function nnels_content_cafe_check_isbn($nid, $isbn, &$isbns, $existing) {
 }
 
 /**
+ * Check for changed ISBN's
+ *
+ * If an ISBN is no longer attached to a node, but the data has the association
+ * still, that association needs to be removed. This function scans for those
+ * situations and removes the association.
+ *
+ * @param array $isbns
+ * @param array $existing
+ *
+ * @return void
+ */
+function nnels_content_cafe_check_changed($isbns, &$existing) {
+  foreach ($isbns as $nid => $nid_isbns) {
+    if (isset($existing[$nid])) {
+      foreach ($existing[$nid] as $isbn => $isbn_id) {
+        if (!isset($nid_isbns[$isbn])) {
+          nnels_content_cafe_delete_node_content_cafe_row($nid, $isbn_id);
+        }
+      }
+    }
+  }
+}
+
+/**
  * Load Content Cafe Data
  *
  * @return array
@@ -207,11 +228,11 @@ function nnels_content_cafe_retrieve_data($isbn) {
  * @param int $nid
  * @param int $isbn
  * @param string $data
- * @param array $exiting
+ * @param array $existing
  *
  * @return int
  */
-function nnels_content_cafe_process_data($nid, $isbn, $data, &$exiting) {
+function nnels_content_cafe_process_data($nid, $isbn, $data, &$existing) {
   $isbn_id = FALSE;
 
   if ($data) {
@@ -238,7 +259,7 @@ function nnels_content_cafe_process_data($nid, $isbn, $data, &$exiting) {
 
       // Handle any errors that come back from the API.
       if (isset($xml_request_item->Error)) {
-        print 'Error: ' . (string)$xml_request_item->Error . ' (' . $isbn . ")\n";
+        drush_print('Error: ' . (string)$xml_request_item->Error . ' (' . $isbn . ")");
       }
 
       // No errors, insert the data.
