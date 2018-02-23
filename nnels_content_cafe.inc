@@ -61,7 +61,6 @@ function nnels_content_cafe_validate_isbn(&$isbn) {
  * @return void
  */
 function nnels_content_cafe_delete_node_content_cafe_row($nid, $isbn_id) {
-  print "Delete from node_content_cafe\n";
   db_delete('node_content_cafe')
     ->condition('nid', $nid)
     ->condition('isbn_id', $isbn_id)
@@ -76,7 +75,6 @@ function nnels_content_cafe_delete_node_content_cafe_row($nid, $isbn_id) {
  * @return int
  */
 function nnels_content_cafe_insert_content_cafe_isbn_row($isbn) {
-  print "Insert into content_cafe_isbn\n";
   return db_insert('content_cafe_isbn')
     ->fields(
       array(
@@ -95,7 +93,6 @@ function nnels_content_cafe_insert_content_cafe_isbn_row($isbn) {
  * @return int
  */
 function nnels_content_cafe_insert_content_cafe_supplier_row($supplier_code, $supplier_name) {
-  print "Insert into content_cafe_supplier\n";
   return db_insert('content_cafe_supplier')
     ->fields(
       array(
@@ -116,7 +113,6 @@ function nnels_content_cafe_insert_content_cafe_supplier_row($supplier_code, $su
  * @return int
  */
 function nnels_content_cafe_insert_content_cafe_annotation_row($external_id, $supplier_id, $annotation) {
-  print "Insert into content_cafe_annotation\n";
   return db_insert('content_cafe_annotation')
     ->fields(
       array(
@@ -137,7 +133,6 @@ function nnels_content_cafe_insert_content_cafe_annotation_row($external_id, $su
  * @return int
  */
 function nnels_content_cafe_insert_content_cafe_isbn_annotation_row($isbn_id, $annotation_id) {
-  print "Insert into content_cafe_isbn_annotation\n";
   return db_insert('content_cafe_isbn_annotation')
     ->fields(
       array(
@@ -158,7 +153,6 @@ function nnels_content_cafe_insert_content_cafe_isbn_annotation_row($isbn_id, $a
  * @return int
  */
 function nnels_content_cafe_insert_content_cafe_biography_row($external_id, $supplier_id, $biography) {
-  print "Insert into content_cafe_biography\n";
   return db_insert('content_cafe_biography')
     ->fields(
       array(
@@ -179,7 +173,6 @@ function nnels_content_cafe_insert_content_cafe_biography_row($external_id, $sup
  * @return int
  */
 function nnels_content_cafe_insert_content_cafe_isbn_biography_row($isbn_id, $biography_id) {
-  print "Insert into content_cafe_isbn_biography\n";
   return db_insert('content_cafe_isbn_biography')
     ->fields(
       array(
@@ -199,7 +192,6 @@ function nnels_content_cafe_insert_content_cafe_isbn_biography_row($isbn_id, $bi
  * @return int
  */
 function nnels_content_cafe_insert_content_cafe_excerpt_row($external_id, $excerpt) {
-  print "Insert into content_cafe_excerpt\n";
   return db_insert('content_cafe_excerpt')
     ->fields(
       array(
@@ -219,7 +211,6 @@ function nnels_content_cafe_insert_content_cafe_excerpt_row($external_id, $excer
  * @return int
  */
 function nnels_content_cafe_insert_content_cafe_isbn_excerpt_row($isbn_id, $excerpt_id) {
-  print "Insert into content_cafe_isbn_excerpt\n";
   return db_insert('content_cafe_isbn_excerpt')
     ->fields(
       array(
@@ -240,7 +231,6 @@ function nnels_content_cafe_insert_content_cafe_isbn_excerpt_row($isbn_id, $exce
  * @return int
  */
 function nnels_content_cafe_insert_content_cafe_flap_row($external_id, $supplier_id, $flap) {
-  print "Insert into content_cafe_flap\n";
   return db_insert('content_cafe_flap')
     ->fields(
       array(
@@ -261,7 +251,6 @@ function nnels_content_cafe_insert_content_cafe_flap_row($external_id, $supplier
  * @return int
  */
 function nnels_content_cafe_insert_content_cafe_isbn_flap_row($isbn_id, $flap_id) {
-  print "Insert into content_cafe_isbn_flap\n";
   return db_insert('content_cafe_isbn_flap')
     ->fields(
       array(
@@ -281,7 +270,6 @@ function nnels_content_cafe_insert_content_cafe_isbn_flap_row($isbn_id, $flap_id
  * @return int
  */
 function nnels_content_cafe_insert_content_cafe_jacket_row($external_id, $fid) {
-  print "Insert into content_cafe_jacket\n";
   return db_insert('content_cafe_jacket')
     ->fields(
       array(
@@ -301,7 +289,6 @@ function nnels_content_cafe_insert_content_cafe_jacket_row($external_id, $fid) {
  * @return int
  */
 function nnels_content_cafe_insert_content_cafe_isbn_jacket_row($isbn_id, $jacket_id) {
-  print "Insert into content_cafe_isbn_jacket\n";
   return db_insert('content_cafe_isbn_jacket')
     ->fields(
       array(
@@ -321,7 +308,6 @@ function nnels_content_cafe_insert_content_cafe_isbn_jacket_row($isbn_id, $jacke
  * @return int
  */
 function nnels_content_cafe_insert_content_cafe_toc_row($external_id, $toc) {
-  print "Insert into content_cafe_toc\n";
   return db_insert('content_cafe_toc')
     ->fields(
       array(
@@ -341,7 +327,6 @@ function nnels_content_cafe_insert_content_cafe_toc_row($external_id, $toc) {
  * @return int
  */
 function nnels_content_cafe_insert_content_cafe_isbn_toc_row($isbn_id, $toc_id) {
-  print "Insert into content_cafe_isbn_toc\n";
   return db_insert('content_cafe_isbn_toc')
     ->fields(
       array(
@@ -361,7 +346,6 @@ function nnels_content_cafe_insert_content_cafe_isbn_toc_row($isbn_id, $toc_id) 
  * @return int
  */
 function nnels_content_cafe_insert_node_content_cafe_row($nid, $isbn_id) {
-  print "Insert into node_content_cafe\n";
   return db_insert('node_content_cafe')
     ->fields(
       array(
@@ -407,7 +391,6 @@ function nnels_content_cafe_select_multiple_content_cafe_isbn_rows($isbns) {
  * @return mixed
  */
 function nnels_content_cafe_select_content_cafe_isbn_row($isbn) {
-  print "Select from content_cafe_isbn\n";
   $result = db_select('content_cafe_isbn', 'c')
     ->fields('c')
     ->condition('c.isbn', $isbn)
@@ -429,7 +412,6 @@ function nnels_content_cafe_select_content_cafe_isbn_row($isbn) {
  * @return mixed
  */
 function nnels_content_cafe_select_content_cafe_supplier_row($supplier_code) {
-  print "Select from content_cafe_supplier\n";
   $result = db_select('content_cafe_supplier', 's')
     ->fields('s')
     ->condition('s.supplier_code', strtoupper($supplier_code))
@@ -624,7 +606,6 @@ function nnels_content_cafe_select_all_content_cafe_annotation_rows($quick = FAL
  * @return mixed
  */
 function nnels_content_cafe_select_content_cafe_biography_row($external_id) {
-  print "Select from content_cafe_biography\n";
   $result = db_select('content_cafe_biography', 'b')
     ->fields('b')
     ->condition('b.external_id', $external_id)
@@ -774,7 +755,6 @@ function nnels_content_cafe_select_all_content_cafe_biography_rows($quick = FALS
  * @return mixed
  */
 function nnels_content_cafe_select_content_cafe_excerpt_row($external_id) {
-  print "Select from content_cafe_excerpt\n";
   $result = db_select('content_cafe_excerpt', 'e')
     ->fields('e')
     ->condition('e.external_id', $external_id)
@@ -922,7 +902,6 @@ function nnels_content_cafe_select_all_content_cafe_excerpt_rows($quick = FALSE)
  * @return mixed
  */
 function nnels_content_cafe_select_content_cafe_flap_row($external_id) {
-  print "Select from content_cafe_flap\n";
   $result = db_select('content_cafe_flap', 'f')
     ->fields('f')
     ->condition('f.external_id', $external_id)
@@ -1219,7 +1198,6 @@ function nnels_content_cafe_select_all_content_cafe_jacket_rows($quick = FALSE) 
  * @return mixed
  */
 function nnels_content_cafe_select_content_cafe_toc_row($external_id) {
-  print "Select from content_cafe_toc\n";
   $result = db_select('content_cafe_toc', 't')
     ->fields('t')
     ->condition('t.external_id', $external_id)
@@ -1368,7 +1346,6 @@ function nnels_content_cafe_select_all_content_cafe_toc_rows($quick = FALSE) {
  * @return mixed
  */
 function nnels_content_cafe_select_node_content_cafe_row($nid, $isbn_id) {
-  print "Select from node_content_cafe\n";
   $result = db_select('node_content_cafe', 's')
     ->fields('s')
     ->condition('s.nid', $nid)
