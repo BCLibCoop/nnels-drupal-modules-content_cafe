@@ -73,7 +73,8 @@ function nnels_content_cafe_menu() {
     'description'      => 'Data from the Content Cafe API',
     'page callback'    => 'drupal_get_form',
     'page arguments'   => array('nnels_content_cafe_overview_form', 1),
-    'access arguments' => array('administer nnels content cafe'),
+    'access callback'  => 'nnels_content_cafe_access',
+    'access arguments' => array(1),
     'file'             => 'nnels_content_cafe.admin.inc',
     'file path'        => drupal_get_path('module', 'nnels_content_cafe'),
     'type'             => MENU_LOCAL_TASK,
@@ -84,7 +85,8 @@ function nnels_content_cafe_menu() {
     'description'      => 'Edit a specic annotation for a repository item.',
     'page callback'    => 'drupal_get_form',
     'page arguments'   => array('nnels_content_cafe_annotation_edit_form', 1, 4),
-    'access arguments' => array('administer nnels content cafe'),
+    'access callback'  => 'nnels_content_cafe_access',
+    'access arguments' => array(1),
     'file'             => 'nnels_content_cafe.admin.inc',
     'file path'        => drupal_get_path('module', 'nnels_content_cafe'),
   );
@@ -93,7 +95,8 @@ function nnels_content_cafe_menu() {
     'description'      => 'Edit a specic biography for a repository item.',
     'page callback'    => 'drupal_get_form',
     'page arguments'   => array('nnels_content_cafe_biography_edit_form', 1, 4),
-    'access arguments' => array('administer nnels content cafe'),
+    'access callback'  => 'nnels_content_cafe_access',
+    'access arguments' => array(1),
     'file'             => 'nnels_content_cafe.admin.inc',
     'file path'        => drupal_get_path('module', 'nnels_content_cafe'),
   );
@@ -102,7 +105,8 @@ function nnels_content_cafe_menu() {
     'description'      => 'Edit a specic excerpt for a repository item.',
     'page callback'    => 'drupal_get_form',
     'page arguments'   => array('nnels_content_cafe_excerpt_edit_form', 1, 4),
-    'access arguments' => array('administer nnels content cafe'),
+    'access callback'  => 'nnels_content_cafe_access',
+    'access arguments' => array(1),
     'file'             => 'nnels_content_cafe.admin.inc',
     'file path'        => drupal_get_path('module', 'nnels_content_cafe'),
   );
@@ -111,7 +115,8 @@ function nnels_content_cafe_menu() {
     'description'      => 'Edit a specic flap for a repository item.',
     'page callback'    => 'drupal_get_form',
     'page arguments'   => array('nnels_content_cafe_flap_edit_form', 1, 4),
-    'access arguments' => array('administer nnels content cafe'),
+    'access callback'  => 'nnels_content_cafe_access',
+    'access arguments' => array(1),
     'file'             => 'nnels_content_cafe.admin.inc',
     'file path'        => drupal_get_path('module', 'nnels_content_cafe'),
   );
@@ -120,7 +125,8 @@ function nnels_content_cafe_menu() {
     'description'      => 'Edit a specic jacket for a repository item.',
     'page callback'    => 'drupal_get_form',
     'page arguments'   => array('nnels_content_cafe_jacket_edit_form', 1, 4),
-    'access arguments' => array('administer nnels content cafe'),
+    'access callback'  => 'nnels_content_cafe_access',
+    'access arguments' => array(1),
     'file'             => 'nnels_content_cafe.admin.inc',
     'file path'        => drupal_get_path('module', 'nnels_content_cafe'),
   );
@@ -129,12 +135,36 @@ function nnels_content_cafe_menu() {
     'description'      => 'Edit a specic toc for a repository item.',
     'page callback'    => 'drupal_get_form',
     'page arguments'   => array('nnels_content_cafe_toc_edit_form', 1, 4),
-    'access arguments' => array('administer nnels content cafe'),
+    'access callback'  => 'nnels_content_cafe_access',
+    'access arguments' => array(1),
     'file'             => 'nnels_content_cafe.admin.inc',
     'file path'        => drupal_get_path('module', 'nnels_content_cafe'),
   );
 
   return $items;
+}
+
+/**
+ * Access callback for node/%/content_cafe and all child pages.
+ */
+function nnels_content_cafe_access($node) {
+
+  // Get the node type.
+  $node_type = db_select('node', 'n')
+    ->fields('n', array('type'))
+    ->condition('n.nid', $node)
+    ->execute()
+    ->fetchField();
+
+  // Check access by node type and permissions.
+  $return = FALSE;
+  if ($node_type == 'repository_item') {
+    if (user_access('administer nnels content cafe')) {
+      $return = TRUE;
+    }
+  }
+
+  return $return;
 }
 
 /**
