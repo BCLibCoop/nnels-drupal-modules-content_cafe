@@ -90,7 +90,7 @@ function nnels_content_cafe_update_content_cafe($limit = FALSE) {
         $isbn_id = nnels_content_cafe_process_data($nid, $isbn, $data, $existing);
 
         // Don't hammer the API.
-        sleep(2);
+        sleep(1);
         $calls++;
       }
 
@@ -269,16 +269,28 @@ function nnels_content_cafe_process_data($nid, $isbn, $data, &$existing) {
         $xml_request_item = $xml_request_item->RequestItems->RequestItem;
   
         // Process all of the possible data returned.
-        nnels_content_cafe_process_data_annotations($isbn_id, $xml_request_item);
-        nnels_content_cafe_process_data_biographies($isbn_id, $xml_request_item);
-        nnels_content_cafe_process_data_excerpts($isbn_id, $xml_request_item);
-        nnels_content_cafe_process_data_flaps($isbn_id, $xml_request_item);
-        nnels_content_cafe_process_data_jackets($isbn_id, $isbn, $xml_request_item);
-        nnels_content_cafe_process_data_tocs($isbn_id, $xml_request_item);
+        try {
+          nnels_content_cafe_process_data_annotations($isbn_id, $xml_request_item);
+          nnels_content_cafe_process_data_biographies($isbn_id, $xml_request_item);
+          nnels_content_cafe_process_data_excerpts($isbn_id, $xml_request_item);
+          nnels_content_cafe_process_data_flaps($isbn_id, $xml_request_item);
+          nnels_content_cafe_process_data_jackets($isbn_id, $isbn, $xml_request_item);
+          nnels_content_cafe_process_data_tocs($isbn_id, $xml_request_item);
 
-        // It is possible that a single node has multiple ISBN's attached and
-        // adding this here will prevent duplicate insert errors.
-        $existing[$nid][$isbn] = TRUE;
+          // It is possible that a single node has multiple ISBN's attached and
+          // adding this here will prevent duplicate insert errors.
+          $existing[$nid][$isbn] = TRUE;
+        }
+
+        // Catch all exceptions here, roll back and exit.
+        catch (Exception $e) {
+          nnels_content_cafe_rollback_isbn($isbn_id);
+
+          drush_print('There was an error processing data for ' . $isbn . '. The exception throw provided the following information:');
+          drush_print($e->getMessage());
+
+          drupal_exit();
+        }
       }
     }
   }
@@ -489,6 +501,23 @@ function nnels_content_cafe_process_data_tocs($isbn_id, $xml_request_item) {
       }
     }
   }
+}
+
+/**
+ * Rollback on error.
+ *
+ * @param int $isbn_id
+ *
+ * @return void
+ */
+function nnels_content_cafe_rollback_isbn($isbn_id) {
+  nnels_content_cafe_delete_content_cafe_isbn_annotation_row($isbn_id);
+  nnels_content_cafe_delete_content_cafe_isbn_biography_row($isbn_id);
+  nnels_content_cafe_delete_content_cafe_isbn_excerpt_row($isbn_id);
+  nnels_content_cafe_delete_content_cafe_isbn_flap_row($isbn_id);
+  nnels_content_cafe_delete_content_cafe_isbn_jacket_row($isbn_id);
+  nnels_content_cafe_delete_content_cafe_isbn_toc_row($isbn_id);
+  nnels_content_cafe_delete_content_cafe_isbn_row($isbn_id);
 }
 
 /**

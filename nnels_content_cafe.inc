@@ -68,6 +68,97 @@ function nnels_content_cafe_delete_node_content_cafe_row($nid, $isbn_id) {
 }
 
 /**
+ * Delete a row from the content_cafe_isbn_annotation table.
+ *
+ * @param int $isbn_id
+ *
+ * @return void
+ */
+function nnels_content_cafe_delete_content_cafe_isbn_annotation_row($isbn_id) {
+  db_delete('content_cafe_isbn_annotation')
+    ->condition('isbn_id', $isbn_id)
+    ->execute();
+}
+
+/**
+ * Delete a row from the content_cafe_isbn_biography table.
+ *
+ * @param int $isbn_id
+ *
+ * @return void
+ */
+function nnels_content_cafe_delete_content_cafe_isbn_biography_row($isbn_id) {
+  db_delete('content_cafe_isbn_biography')
+    ->condition('isbn_id', $isbn_id)
+    ->execute();
+}
+
+/**
+ * Delete a row from the content_cafe_isbn_excerpt table.
+ *
+ * @param int $isbn_id
+ *
+ * @return void
+ */
+function nnels_content_cafe_delete_content_cafe_isbn_excerpt_row($isbn_id) {
+  db_delete('content_cafe_isbn_excerpt')
+    ->condition('isbn_id', $isbn_id)
+    ->execute();
+}
+
+/**
+ * Delete a row from the content_cafe_isbn_flap table.
+ *
+ * @param int $isbn_id
+ *
+ * @return void
+ */
+function nnels_content_cafe_delete_content_cafe_isbn_flap_row($isbn_id) {
+  db_delete('content_cafe_isbn_flap')
+    ->condition('isbn_id', $isbn_id)
+    ->execute();
+}
+
+/**
+ * Delete a row from the content_cafe_isbn_jacket table.
+ *
+ * @param int $isbn_id
+ *
+ * @return void
+ */
+function nnels_content_cafe_delete_content_cafe_isbn_jacket_row($isbn_id) {
+  db_delete('content_cafe_isbn_jacket')
+    ->condition('isbn_id', $isbn_id)
+    ->execute();
+}
+
+/**
+ * Delete a row from the content_cafe_isbn_toc table.
+ *
+ * @param int $isbn_id
+ *
+ * @return void
+ */
+function nnels_content_cafe_delete_content_cafe_isbn_toc_row($isbn_id) {
+  db_delete('content_cafe_isbn_toc')
+    ->condition('isbn_id', $isbn_id)
+    ->execute();
+}
+
+/**
+ * Delete a row from the content_cafe_isbn table.
+ *
+ * @param int $isbn_id
+ *
+ * @return void
+ */
+function nnels_content_cafe_delete_content_cafe_isbn_row($isbn_id) {
+  db_delete('content_cafe_isbn')
+    ->condition('isbn_id', $isbn_id)
+    ->execute();
+}
+
+/**
  * Insert a row into the content_cafe_isbn table.
  *
  * @param string $isbn
