@@ -301,14 +301,21 @@ function nnels_content_cafe_views_post_execute(&$view) {
     foreach ($view->result as $result) {
       $nids[] = $result->nid;
     }
+
     $jackets = nnels_content_cafe_select_multiple_content_cafe_jacket_rows_by_nids($nids);
-    
+
     // Update the results with the data.
     foreach ($view->result as $result) {
       if (isset($jackets[$result->nid])) {
         foreach ($jackets[$result->nid] as $jacket) {
           if ($jacket->selected) {
-            $result->content_cafe_selected_jacket = $jacket->jacket;
+            $file = file_load($jacket->fid);
+            $result->content_cafe_selected_jacket = theme(
+              'image',
+              array(
+                'path' => file_create_url($file->uri),
+              )
+            );
           }
         }
       }
