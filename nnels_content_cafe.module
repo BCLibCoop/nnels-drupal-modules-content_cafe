@@ -296,8 +296,10 @@ function nnels_content_cafe_views_post_execute(&$view) {
   // Selected Jacket field.
   if (isset($view->field['content_cafe_selected_jacket'])) {
 
-    // Get a list of nodes so the data can be selected in a bulk fashion.
-    $nids = array();
+    // Get a list of nodes so the data can be selected in a bulk fashion. Any
+    // contextual filters will come in as args. It is possible that the view
+    // results will not have a node id.
+    $nids = $view->args;
     foreach ($view->result as $result) {
       $nids[] = $result->nid;
     }
@@ -306,6 +308,8 @@ function nnels_content_cafe_views_post_execute(&$view) {
 
     // Update the results with the data.
     foreach ($view->result as $result) {
+
+      // result has a nid.
       if (isset($jackets[$result->nid])) {
         foreach ($jackets[$result->nid] as $jacket) {
           if ($jacket->selected) {
@@ -319,6 +323,30 @@ function nnels_content_cafe_views_post_execute(&$view) {
           }
         }
       }
+
+      // contextual filter.
+      elseif (count($view->args)) {
+        if (isset($jackets[$view->args[0]])) {
+          foreach ($jackets[$view->args[0]] as $jacket) {
+            if ($jacket->selected) {
+              $file = file_load($jacket->fid);
+              $result->content_cafe_selected_jacket = theme(
+                'image',
+                array(
+                  'path' => file_create_url($file->uri),
+                )
+              );
+            }
+          }
+        }
+
+        // default.
+        else {
+          $result->content_cafe_selected_jacket = NULL;
+        }
+      }
+
+      // default.
       else {
         $result->content_cafe_selected_jacket = NULL;
       }
