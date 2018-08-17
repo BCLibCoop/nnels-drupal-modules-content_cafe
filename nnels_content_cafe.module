@@ -314,12 +314,27 @@ function nnels_content_cafe_views_post_execute(&$view) {
         foreach ($jackets[$result->nid] as $jacket) {
           if ($jacket->selected) {
             $file = file_load($jacket->fid);
-            $result->content_cafe_selected_jacket = theme(
-              'image',
-              array(
-                'path' => file_create_url($file->uri),
-              )
-            );
+
+            // No image style.
+            if (empty($view->field['content_cafe_selected_jacket']->options['image_style'])) {
+              $result->content_cafe_selected_jacket = theme(
+                'image',
+                array(
+                  'path' => file_create_url($file->uri),
+                )
+              );
+            }
+
+            // Apply the image style if applicable
+            else {
+              $result->content_cafe_selected_jacket = theme(
+                'image_style',
+                array(
+                  'style_name' => $view->field['content_cafe_selected_jacket']->options['image_style'],
+                  'path' => $file->uri,
+                )
+              );
+            }
           }
         }
       }
