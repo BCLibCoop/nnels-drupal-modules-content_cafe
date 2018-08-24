@@ -546,6 +546,18 @@ function nnels_content_cafe_schema() {
       ),
     ),
   );
+  
+  $schema['cache_nnels_content_cafe'] = drupal_get_schema_unprocessed('system', 'cache');
 
   return $schema;
+}
+
+/**
+ * Create cache_nnels_content_cafe table.
+ */
+function nnels_content_cafe_update_7001() {
+  if (!db_table_exists('cache_nnels_content_cafe')) {
+    $schema = nnels_content_cafe_schema();
+    db_create_table('cache_nnels_content_cafe', $schema['cache_nnels_content_cafe']);
+  }
 }
