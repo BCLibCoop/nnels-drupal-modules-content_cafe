@@ -423,33 +423,88 @@ function nnels_content_cafe_image_deliver() {
   $temp_folder     = 'temporary://' . $file_system;
   $temp            = $temp_folder . '/' . $image_name;
   $temp_derivative = $temp_folder . '/' . $image_style['name'] . '/' . $image_name;
-  $cid             = base64_encode($source);
-  
-  if (!$cached = cache_get($cid, 'cache_nnels_content_cafe')) {
-  
-    // Create the s3 folder in the temporary file system.
-    if (!file_prepare_directory($temp_folder)) {
-      drupal_mkdir($temp_folder . '/' . $image_style['name'], NULL, TRUE);
-    }
-    
-    // Download the source image and create the temp file.
-    $data = file_get_contents($source_url);
-    file_unmanaged_save_data($data, $temp);
-  
-    // Transform the image.
-    image_style_create_derivative($image_style, $temp, $temp_derivative);
-  
-    // Copy from the temp folder to destination.
-    $image = image_load($temp_derivative);
-    file_unmanaged_copy($image->source, $destination);
+  $cid             = base64_encode($destination);
 
-    // Set the cache value so the image derivative is not repeatedly created.
-    cache_set($cid, TRUE, 'cache_nnels_content_cafe');
+  // Either an image derivative has never been created or it is in the process
+  // of being created.
+  if (!$cached = cache_get($cid, 'cache_nnels_content_cafe')) {
     
-    // Deliver the image.
-    file_transfer($image->source, array('Content-Type' => $image->info['mime_type'], 'Content-Length' => $image->info['file_size']));
+    // Set a lock to tell other processes that may want to upload this image
+    // that this process is doing the work. If there is another process
+    // currently uploading the image, wait for that process to finish (or
+    // not if the wait is too great).
+    $lock_name = 'nnels_content_cafe_image_deliver:' . $cid;
+    if (lock_acquire($lock_name)) {
+      $create_image = TRUE;
+    }
+    else {
+      $create_image = nnels_content_cafe_image_wait($cid);
+    }
+
+    if ($create_image) {
+  
+      // Create the s3 folder in the temporary file system.
+      if (!file_prepare_directory($temp_folder)) {
+        drupal_mkdir($temp_folder . '/' . $image_style['name'], NULL, TRUE);
+      }
+      
+      // Download the source image and create the temp file.
+      $data = file_get_contents($source_url);
+      file_unmanaged_save_data($data, $temp);
+
+      // Transform the image.
+      image_style_create_derivative($image_style, $temp, $temp_derivative);
+
+      // Copy from the temp folder to destination.
+      $image = image_load($temp_derivative);
+
+      // Register a shutdown function to make absolutely sure that the image
+      // upload is completed without the possibility of the user stopping it.
+      register_shutdown_function(
+        function () use ($image, $temp_derivative, $destination, $cid, $lock_name) {
+    
+          // Copy the image to S3.
+          file_unmanaged_copy($image->source, $destination);
+
+          // Remove the temp file.
+          file_unmanaged_delete($temp_derivative);
+
+          // Set the cache value so the image derivative is not repeatedly
+          // created. This is a workaround since file_exists does not work
+          // with this implementation of S3.
+          cache_set($cid, TRUE, 'cache_nnels_content_cafe');
+        }
+      );
+
+      // Deliver the image to the browser.
+      file_transfer($image->source, array('Content-Type' => $image->info['mime_type'], 'Content-Length' => $image->info['file_size']));
+    }
   }
   
   // Redirect to the image.
   drupal_goto($destination_url, array(), 301);
+}
+
+/**
+ * Wait for another process to create the image derivative.
+ *
+ * @param $cid
+ * @return bool
+ */
+function nnels_content_cafe_image_wait($cid) {
+  
+  // Check to see if the cache value has been set every .5 second for 30 seconds.
+  $tries = 0;
+  while ($tries < 60 && !$cached = cache_get($cid, 'cache_nnels_content_cafe')) {
+    usleep(500000);
+    $tries++;
+  }
+  
+  // Determine if an image derivative needs to be created or not.
+  $create_image = TRUE;
+  if ($cached = cache_get($cid, 'cache_nnels_content_cafe')) {
+    $create_image = FALSE;
+  }
+  
+  return $create_image;
 }
