@@ -332,7 +332,7 @@ function nnels_content_cafe_views_post_execute(&$view) {
               );
             }
 
-            // Apply the image style if applicable
+            // Apply the image style if applicable.
             else {
               $result->content_cafe_selected_jacket = theme(
                 'image',
