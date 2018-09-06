@@ -415,6 +415,24 @@ function nnels_content_cafe_views_post_execute(&$view) {
 }
 
 /**
+ * Implements hook_preprocess_HOOK().
+ */
+function nnels_content_cafe_preprocess_html(&$vars) {
+
+  // Add class to body to denote whether there is a jacket or not.
+  $node = menu_get_object();
+  if ($node && $node->type == 'repository_item') {
+    $jackets = nnels_content_cafe_select_multiple_content_cafe_jacket_rows_by_nids(array($node->nid));
+    if ($jackets) {
+      $vars['classes_array'][] = 'has_jacket';
+    }
+    else {
+      $vars['classes_array'][] = 'no_jacket';
+    }
+  }
+}
+
+/**
  * Deliver Image Derivatives. Assumes S3 as the source and destination.
  */
 function nnels_content_cafe_image_deliver() {
