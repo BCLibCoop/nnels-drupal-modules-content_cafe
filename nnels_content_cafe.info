@@ -7,6 +7,7 @@ configure = admin/configure/nnels/content_cafe
 
 dependencies[] = image
 dependencies[] = views
+dependencies[] = amazons3
 
 files[] = plugins/nnels_content_cafe_selected_annotation_views_field_handler.inc
 files[] = plugins/nnels_content_cafe_selected_biography_views_field_handler.inc
