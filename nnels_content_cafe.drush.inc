@@ -1,5 +1,6 @@
 <?php
 
+
 /**
  * Implements hook_drush_command().
  */
@@ -467,8 +468,37 @@ function nnels_content_cafe_process_data_jackets($isbn_id, $isbn, $xml_request_i
         $extension_id = $mime_types[$headers['content-type'][0]];
         $extension    = $extensions[$extension_id];
 
-        // Send the file to S3, replace existing and then update the database.
-        $file      = file_save_data($response, 's3://book-covers/' . $isbn . '.' . $extension, FILE_EXISTS_REPLACE);
+         //Build a file object for Drupal record-keeping
+        $file = new stdClass();
+        $file->uid = '0';
+        $file->filename = $isbn . '.' . $extension;
+        $file->filemime = $headers['content-type'][0];
+
+        //Attempt to deliver to AWS S3
+        $key = '/book-covers/' . $isbn . '.' . $extension;
+        $bucket = variable_get('amazons3_bucket');
+        $return = file_put_contents('s3://' . $bucket . $key, $response);
+        $file->filesize = $return;
+
+        if ($return === FALSE) {
+          watchdog('nnels_content_cafe', 'Cover failed to upload to S3: ' .
+            $bucket . $key . PHP_EOL);
+         continue; //try next in foreach
+        }
+
+        //Flesh out the rest of the object
+        $file->uri = 's3://' . $bucket . $key;
+        $file->status = 0;
+        $file->timestamp = REQUEST_TIME;
+
+        //Write to file_managed and jacket object
+        try {
+          $fid = file_save($file);
+        } catch (Exception $e) {
+          //watchdog('nnels_content_cafe', $e->getMessage() . PHP_EOL);
+          echo "File entry {$file->uri} existed but was refreshed in bucket" .
+            PHP_EOL;
+        }
         file_usage_add($file, 'nnels_content_cafe', 'jacket', $isbn_id);
         $jacket_id = nnels_content_cafe_insert_content_cafe_jacket_row($external_id, $file->fid);
         nnels_content_cafe_insert_content_cafe_isbn_jacket_row($isbn_id, $jacket_id);
