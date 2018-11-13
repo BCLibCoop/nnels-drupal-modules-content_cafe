@@ -1360,13 +1360,13 @@ function nnels_content_cafe_jacket_edit_form($form, &$form_state, $nid, $externa
   drupal_set_title(t('Edit jacket %id for %node.', array('%id' => $external_id, '%node' => $node->title)), PASS_THROUGH);
 
   $form = array();
-
+  $bucket = variable_get("amazons3_bucket");
   $form['jacket'] = array(
     '#type'            => 'managed_file',
     '#title'           => t('Jacket'),
     '#default_value'   => $jacket->fid,
     '#required'        => TRUE,
-    '#upload_location' => 's3://book-covers',
+    '#upload_location' => 's3://' . $bucket . '/book-covers',
   );
 
   $form['actions'] = array(
