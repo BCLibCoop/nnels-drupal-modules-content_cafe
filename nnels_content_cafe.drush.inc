@@ -422,6 +422,10 @@ function nnels_content_cafe_process_data_flaps($isbn_id, $xml_request_item) {
  * @return void
  */
 function nnels_content_cafe_process_data_jackets($isbn_id, $isbn, $xml_request_item) {
+
+  //Increase execution time during this call
+  ini_set('max_execution_time', 600);
+
   $xml_jacket_items = $xml_request_item->JacketItems;
   if (isset($xml_jacket_items)) {
     foreach ($xml_jacket_items->children() as $xml_jacket_item) {
