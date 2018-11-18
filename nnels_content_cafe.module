@@ -502,13 +502,31 @@ function nnels_content_cafe_image_deliver() {
 
       // Copy from the temp folder to destination.
       $image = image_load($temp_derivative);
+      $derived_image = file_get_contents($image->source);
 
       // Register a shutdown function to make absolutely sure that the image
       // upload is completed without the possibility of the user stopping it.
       register_shutdown_function(
-        function () use ($image, $temp_derivative, $destination, $cid, $lock_name) {
+        function () use ($derived_image, $temp_derivative, $destination, $cid,
+          $lock_name) {
+
           // Copy the image to S3.
-          file_unmanaged_copy($image->source, $destination);
+
+          /* NB AmazonS3 compatibility:
+           * file_prepare_directory fails within file_unmanaged_copy here and
+           *  it will drop to drupal_mkdir but cannot operate on the dirname
+           * in S3. To get around this for now, we load the image derivative
+           * data and stream it using the proven method (file_put_contents).
+           * This should be equivalent as no database footprint it needed
+           * beyond the temp file.
+           */
+
+          //Tests
+          $directory = drupal_dirname($destination);
+          $dir_test = drupal_mkdir($directory, NULL, TRUE);
+
+          //Streaming the image as data to S3
+          file_put_contents($destination, $derived_image);
 
           // Remove the temp file.
           file_unmanaged_delete($temp_derivative);
