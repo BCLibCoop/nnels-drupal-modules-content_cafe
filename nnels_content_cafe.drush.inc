@@ -97,6 +97,8 @@ function nnels_content_cafe_update_content_cafe($limit = FALSE) {
         // Retrieve data from the API.
         $data = nnels_content_cafe_retrieve_data($isbn);
 
+        if (! $data) break 2;
+
         // Insert the data into the database.
         $isbn_id = nnels_content_cafe_process_data($nid, $isbn, $data, $existing);
 
