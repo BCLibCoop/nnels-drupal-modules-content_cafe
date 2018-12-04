@@ -65,13 +65,22 @@ function nnels_content_cafe_update_content_cafe($limit = FALSE) {
   // from the API. Validate the ISBN data at this point.
   $isbns = array();
   while ($row = $results->fetchObject()) {
+
     nnels_content_cafe_check_isbn($row->nid, $row->field_isbn_value, $isbns, $existing);
     nnels_content_cafe_check_isbn($row->nid, $row->field_isbn_audio_value, $isbns, $existing);
+    if ( $row->field_system_control_number ) {
+      foreach ($row->field_system_control_number as $instance => $scn) {
+        nnels_content_cafe_check_isbn(
+          $row->nid, $row->field_isbn_value, $isbns, $existing
+        );
+      }
+    }
   }
   nnels_content_cafe_check_changed($isbns, $existing);
 
   // Fetch the data from the API.
   $calls = 0;
+
   foreach ($isbns as $nid => $nid_isbns) {
     foreach (array_keys($nid_isbns) as $isbn) {
       drush_print('Fetching data for ISBN Number: ' . $isbn);
@@ -79,6 +88,7 @@ function nnels_content_cafe_update_content_cafe($limit = FALSE) {
       // If there is already ISBN data in the tables, associate this ISBN with
       // the node. If there is no data, fetch the data and store it all.
       $record = nnels_content_cafe_select_content_cafe_isbn_row($isbn);
+
       if ($record) {
         $isbn_id = $record->isbn_id;
       }
@@ -94,7 +104,6 @@ function nnels_content_cafe_update_content_cafe($limit = FALSE) {
         sleep(1);
         $calls++;
       }
-
       nnels_content_cafe_conditionally_insert_node_content_cafe_row($nid, $isbn_id);
 
       // Handling the limit in this way rather than with a database query because
@@ -192,13 +201,16 @@ function nnels_content_cafe_load_isbn_data() {
   $query = db_select('node', 'n');
   $query->leftJoin('field_data_field_isbn', 'fi', 'fi.entity_id = n.nid');
   $query->leftJoin('field_data_field_isbn_audio', 'fa', 'fa.entity_id = n.nid');
+  $query->leftJoin('field_data_field_system_control_number', 'fs', 'fs.entity_id = n.nid');
   $query->fields('n', array('nid'));
   $query->fields('fi', array('field_isbn_value'));
   $query->fields('fa', array('field_isbn_audio_value'));
+  $query->fields('fs', array('field_system_control_number_value'));
   $query->condition('n.type', 'repository_item');
   $or = db_or();
   $or->isNotNull('fi.field_isbn_value');
   $or->isNotNull('fa.field_isbn_audio_value');
+  $or->isNotNull('fs.field_system_control_number_value');
   $query->condition($or);
 
   return $query->execute();
