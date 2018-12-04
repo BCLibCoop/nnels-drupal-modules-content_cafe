@@ -148,6 +148,11 @@ function nnels_content_cafe_menu() {
  * Implements hook_menu_alter().
  */
 function nnels_content_cafe_menu_alter(&$items) {
+  //Our custom image style callback given the built route
+  $items['amazons3/content_cafe/styles/%image_style']['page callback'] = 'nnels_content_cafe_image_deliver';
+  $items['amazons3/content_cafe/styles/%image_style']['access arguments'] = array('access content');
+  $items['amazons3/content_cafe/styles/%image_style']['page arguments'] = array(3);
+  //The original callback route
   $items['system/files/styles/%image_style']['page callback'] = 'nnels_content_cafe_image_deliver';
 }
 
@@ -442,15 +447,23 @@ function nnels_content_cafe_image_deliver() {
   if (count($args) < 4) {
     return MENU_NOT_FOUND;
   }
-  
-  // Working vars.
+
+  //Set working vars based on mode
   $image_style     = array_shift($args);
   $file_system     = array_shift($args);
   $image_name      = array_pop($args);
   $image_path      = implode('/', $args);
+
+  if (variable_get('nnels_cc_s3_image_style_callback')) {
+    //Need to explicitly load image_style
+    $image_bucket = variable_get('nnels_cc_s3_image_style_bucket');
+    //append bucket if we have it
+    $image_path = $image_bucket . "/" . $image_path;
+  }
+
+  $destination     = $file_system . '://' . $image_path . '/image_style_' . $image_style['name'] . '_' . $image_name;
   $source          = $file_system . '://' . $image_path . '/' . $image_name;
   $source_url      = file_create_url($source);
-  $destination     = $file_system . '://' . $image_path . '/image_style_' . $image_style['name'] . '_' . $image_name;
   $destination_url = file_create_url($destination);
   $temp_folder     = 'temporary://' . $file_system;
   $temp            = $temp_folder . '/' . $image_name;
@@ -489,14 +502,31 @@ function nnels_content_cafe_image_deliver() {
 
       // Copy from the temp folder to destination.
       $image = image_load($temp_derivative);
+      $derived_image = file_get_contents($image->source);
 
       // Register a shutdown function to make absolutely sure that the image
       // upload is completed without the possibility of the user stopping it.
       register_shutdown_function(
-        function () use ($image, $temp_derivative, $destination, $cid, $lock_name) {
-    
+        function () use ($derived_image, $temp_derivative, $destination, $cid,
+          $lock_name) {
+
           // Copy the image to S3.
-          file_unmanaged_copy($image->source, $destination);
+
+          /* NB AmazonS3 compatibility:
+           * file_prepare_directory fails within file_unmanaged_copy here and
+           *  it will drop to drupal_mkdir but cannot operate on the dirname
+           * in S3. To get around this for now, we load the image derivative
+           * data and stream it using the proven method (file_put_contents).
+           * This should be equivalent as no database footprint it needed
+           * beyond the temp file.
+           */
+
+          //Tests
+          $directory = drupal_dirname($destination);
+          $dir_test = drupal_mkdir($directory, NULL, TRUE);
+
+          //Streaming the image as data to S3
+          file_put_contents($destination, $derived_image);
 
           // Remove the temp file.
           file_unmanaged_delete($temp_derivative);
