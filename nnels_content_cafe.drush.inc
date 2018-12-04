@@ -68,13 +68,7 @@ function nnels_content_cafe_update_content_cafe($limit = FALSE) {
 
     nnels_content_cafe_check_isbn($row->nid, $row->field_isbn_value, $isbns, $existing);
     nnels_content_cafe_check_isbn($row->nid, $row->field_isbn_audio_value, $isbns, $existing);
-    if ( $row->field_system_control_number ) {
-      foreach ($row->field_system_control_number as $instance => $scn) {
-        nnels_content_cafe_check_isbn(
-          $row->nid, $row->field_isbn_value, $isbns, $existing
-        );
-      }
-    }
+    nnels_content_cafe_check_isbn($row->nid, $row->field_system_control_number_value, $isbns, $existing);
   }
   nnels_content_cafe_check_changed($isbns, $existing);
 
@@ -214,7 +208,6 @@ function nnels_content_cafe_load_isbn_data() {
   $or->isNotNull('fa.field_isbn_audio_value');
   $or->isNotNull('fs.field_system_control_number_value');
   $query->condition($or);
-
   return $query->execute();
 }
 
