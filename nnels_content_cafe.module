@@ -486,8 +486,15 @@ function nnels_content_cafe_image_deliver() {
       $create_image = nnels_content_cafe_image_wait($cid);
     }
 
+    //Proceed
     if ($create_image) {
-  
+
+      //Perhaps cache was cleared and derivative already exists in S3 ?
+      //Final check to break out before re-deriving from source
+      if ($check_image = file_get_contents($destination_url) ) {
+        drupal_goto($destination_url, array(), 301);
+      }
+
       // Create the s3 folder in the temporary file system.
       if (!file_prepare_directory($temp_folder)) {
         drupal_mkdir($temp_folder . '/' . $image_style['name'], NULL, TRUE);
@@ -507,7 +514,8 @@ function nnels_content_cafe_image_deliver() {
       // Register a shutdown function to make absolutely sure that the image
       // upload is completed without the possibility of the user stopping it.
       register_shutdown_function(
-        function () use ($derived_image, $temp_derivative, $destination, $cid,
+        function () use ($derived_image, $temp, $temp_derivative, $destination,
+      $cid,
           $lock_name) {
 
           // Copy the image to S3.
@@ -522,13 +530,15 @@ function nnels_content_cafe_image_deliver() {
            */
 
           //Tests
-          $directory = drupal_dirname($destination);
-          $dir_test = drupal_mkdir($directory, NULL, TRUE);
+          //$directory = drupal_dirname($destination);
+          //$dir_test = drupal_mkdir($directory, NULL, TRUE);
 
           //Streaming the image as data to S3
           file_put_contents($destination, $derived_image);
 
-          // Remove the temp file.
+          // Remove the temp derivative and initial file. Served from S3 as
+          // long as cache exists
+          file_unmanaged_delete($temp);
           file_unmanaged_delete($temp_derivative);
 
           // Set the cache value so the image derivative is not repeatedly
@@ -542,9 +552,9 @@ function nnels_content_cafe_image_deliver() {
       file_transfer($image->source, array('Content-Type' => $image->info['mime_type'], 'Content-Length' => $image->info['file_size']));
     }
   }
-  
+
   // Redirect to the image.
-  drupal_goto($destination_url, array(), 301);
+   drupal_goto($destination_url, array(), 301);
 }
 
 /**
