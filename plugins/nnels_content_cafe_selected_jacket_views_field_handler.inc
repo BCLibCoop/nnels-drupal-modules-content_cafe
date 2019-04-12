@@ -37,6 +37,7 @@ class nnels_content_cafe_selected_jacket_views_field_handler extends views_handl
    * Implements views_handler_field#render().
    */
   function render($value) {
-    return $value->content_cafe_selected_jacket;
+    if( property_exists($value, 'content_cafe_selected_jacket') ) return
+      $value->content_cafe_selected_jacket;
   }
 }
